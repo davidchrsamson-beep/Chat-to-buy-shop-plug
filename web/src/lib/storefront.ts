@@ -27,8 +27,7 @@ export type StoreVendor = {
 };
 
 const VENDOR_FIELDS =
-  "id, business_name, slug, whatsapp, neighbourhood, instagram, tiktok, tagline, story, special_offer, ticker_text, logo_url, hero_urls, verified, " +
-  "delivers, delivery_areas, delivery_note, open_24h, opens_at, closes_at, open_days, standout";
+  "id, business_name, slug, whatsapp, neighbourhood, instagram, tiktok, tagline, story, special_offer, ticker_text, logo_url, hero_urls, verified, delivers, delivery_areas, delivery_note, open_24h, opens_at, closes_at, open_days, standout";
 
 // Storefronts are free and public: any store that exists is shown (the database rules decide).
 export async function loadStore(slug: string) {

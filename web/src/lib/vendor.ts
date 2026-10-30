@@ -38,8 +38,7 @@ export async function requireVendor() {
   const { data, error } = await supabase
     .from("vendors")
     .select(
-      "id, business_name, slug, whatsapp, neighbourhood, instagram, tiktok, tagline, story, special_offer, ticker_text, logo_url, hero_urls, verified, " +
-        "delivers, delivery_areas, delivery_note, open_24h, opens_at, closes_at, open_days, standout",
+      "id, business_name, slug, whatsapp, neighbourhood, instagram, tiktok, tagline, story, special_offer, ticker_text, logo_url, hero_urls, verified, delivers, delivery_areas, delivery_note, open_24h, opens_at, closes_at, open_days, standout",
     )
     .eq("owner_id", auth.claims.sub)
     .is("deleted_at", null)
