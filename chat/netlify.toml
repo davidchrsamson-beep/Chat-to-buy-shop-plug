@@ -1,0 +1,14 @@
+# Tells Netlify how to build and run this Next.js app.
+# (Netlify reads this file from the project's base directory.)
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Netlify's Next.js runtime: runs the pages, logins, searches and uploads on Netlify's servers.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Harmless values that also appear in the code (not passwords), so the secrets check skips them.
+# Real keys (OpenAI, R2 access keys, Supabase) are still checked.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_TEAM_WHATSAPP,OPENAI_MODEL,R2_BUCKET"
