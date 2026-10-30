@@ -90,7 +90,7 @@ export default function ExampleCarousel({ onAsk, onPhoto }: { onAsk: (text: stri
                 onClick={() => (s.photo ? onPhoto() : onAsk(s.ask))}
                 className="block w-full overflow-hidden rounded-[20px] border border-line bg-panel text-left transition hover:border-line-strong"
               >
-                <div className="relative aspect-[4/5] w-full bg-[#2A2B31]">
+                <div className="relative aspect-[4/5] w-full bg-[var(--placeholder)]">
                   {s.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.image} alt="" loading={i < 2 ? "eager" : "lazy"} draggable={false} className="h-full w-full object-cover" />

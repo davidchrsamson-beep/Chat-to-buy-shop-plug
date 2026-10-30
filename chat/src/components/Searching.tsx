@@ -46,7 +46,7 @@ export default function Searching({ area, tonight, delivered }: { area?: string;
         @keyframes errand-orbit { to { transform: rotate(360deg); } }
         @keyframes errand-step { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
         .errand-shimmer {
-          background: linear-gradient(90deg, #26272c 0%, #34353b 20%, #4a3a2e 30%, #34353b 40%, #26272c 60%);
+          background: linear-gradient(90deg, var(--shimmer-a) 0%, var(--shimmer-b) 20%, var(--shimmer-c) 30%, var(--shimmer-b) 40%, var(--shimmer-a) 60%);
           background-size: 200% 100%;
           animation: errand-shimmer 1.6s linear infinite;
         }

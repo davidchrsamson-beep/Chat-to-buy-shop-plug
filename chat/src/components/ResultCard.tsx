@@ -21,7 +21,7 @@ export default function ResultCard({
 
   return (
     <article className="flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-[22px] border border-line bg-panel">
-      <a href={productLink} target="_blank" rel="noopener noreferrer" className="relative block h-40 bg-[#2A2B31]">
+      <a href={productLink} target="_blank" rel="noopener noreferrer" className="relative block h-40 bg-[var(--placeholder)]">
         {r.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={r.imageUrl} alt={r.productName} loading="lazy" className="h-full w-full object-cover" />
@@ -40,8 +40,8 @@ export default function ResultCard({
 
         {/* Time and place: what matters most when you need it now */}
         {r.statusText && (
-          <span className={`flex items-center gap-1.5 text-xs ${r.openNow ? "text-[#4ADE80]" : "text-mute"}`}>
-            <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${r.openNow ? "bg-[#4ADE80]" : "bg-mute"}`} />
+          <span className={`flex items-center gap-1.5 text-xs ${r.openNow ? "text-[var(--ok)]" : "text-mute"}`}>
+            <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${r.openNow ? "bg-[var(--ok)]" : "bg-mute"}`} />
             {r.statusText}
           </span>
         )}

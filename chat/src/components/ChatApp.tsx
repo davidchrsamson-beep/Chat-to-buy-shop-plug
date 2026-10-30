@@ -9,6 +9,7 @@ import { shrinkPhoto } from "@/lib/photo";
 import { formatPrice } from "@/lib/price";
 import Composer from "./Composer";
 import { ChristmasBadge, FestiveBackdrop } from "./Festive";
+import { THEME_STYLES, ThemeToggle, useTheme } from "./Theme";
 import JustFound from "./JustFound";
 import QuickChips from "./QuickChips";
 import Searching from "./Searching";
@@ -22,10 +23,8 @@ const MARKET_URL = process.env.NEXT_PUBLIC_MARKET_URL ?? "";
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const CHRISTMAS = isChristmasEdition();
 
-// Phones: the page must never slide sideways (wide decorations are trimmed at the screen edge).
-const NO_SIDEWAYS = (
-  <style>{`html, body { max-width: 100%; overflow-x: hidden; overflow-x: clip; overscroll-behavior-x: none; }`}</style>
-);
+// Colours for the white (default) and black looks, plus "never slide sideways" on phones.
+const THEME = <style>{THEME_STYLES}</style>;
 
 type SortKey = "best" | "low" | "high" | "new";
 type UserMsg = { id: string; role: "user"; text: string; imageUrl?: string; tags?: string };
@@ -73,6 +72,7 @@ export default function ChatApp() {
   const [image, setImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [prefs, setPrefsState] = useState<SearchPrefs>({});
+  const { theme, toggle: toggleTheme } = useTheme();
   const [finds, setFinds] = useState<Find[]>([]);
 
   // Remember the buyer's area on this phone (just a convenience; fine if it's not available).
@@ -284,23 +284,28 @@ export default function ChatApp() {
   if (messages.length === 0) {
     return (
       <>
-      {NO_SIDEWAYS}
+      {THEME}
       {CHRISTMAS && <FestiveBackdrop />}
-      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-xl flex-col px-4 pb-6 pt-7">
+      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-xl flex-col px-4 pb-6 pt-4">
+        {CHRISTMAS && (
+          <div className="mb-1 flex justify-center">
+            <ChristmasBadge />
+          </div>
+        )}
         <header className="flex h-11 items-center justify-between gap-2">
-          <span className="flex items-center gap-2">
-            <span className="text-lg font-bold tracking-tight">errand</span>
-            {CHRISTMAS && <ChristmasBadge />}
+          <span className="text-lg font-bold tracking-tight">errand</span>
+          <span className="flex items-center gap-3">
+            <a href={`${MARKET_URL}/vendor/signup`} className="shrink-0 text-sm text-mute hover:text-snow">Sell on Ndu</a>
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </span>
-          <a href={`${MARKET_URL}/vendor/signup`} className="shrink-0 text-sm text-mute hover:text-snow">Sell on Ndu</a>
         </header>
 
         <main className="flex min-w-0 flex-1 flex-col justify-end gap-6 pb-5">
           <div className="px-1">
             <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight">
-              Vendors are <span className="text-accent">always</span> active.
+              Order anything you want, day or <span className="text-accent">late night</span>.
             </h1>
-            <p className="mt-3 text-base leading-relaxed text-mute">Order anything you want, day or late night.</p>
+            <p className="mt-3 text-base leading-relaxed text-mute">Vendors are always active.</p>
           </div>
 
           {EXPERIMENTS.justFound && <JustFound finds={finds} onPick={(name) => send(name)} />}
@@ -333,14 +338,18 @@ export default function ChatApp() {
 
   return (
     <>
-    {NO_SIDEWAYS}
+    {THEME}
       {CHRISTMAS && <FestiveBackdrop />}
-    <div className="relative z-10 mx-auto flex h-dvh w-full min-w-0 max-w-xl flex-col pt-4">
-      <header className="flex items-center justify-between px-3 py-2">
-        <span className="flex items-center gap-1.5">
-          <button type="button" onClick={newChat} className="h-11 px-2 text-base font-bold tracking-tight">errand</button>
-          {CHRISTMAS && <ChristmasBadge small />}
-        </span>
+    <div className="relative z-10 mx-auto flex h-dvh w-full min-w-0 max-w-xl flex-col pt-3">
+      {CHRISTMAS && (
+        <div className="flex justify-center">
+          <ChristmasBadge />
+        </div>
+      )}
+      <header className="flex items-center justify-between px-3 py-1">
+        <button type="button" onClick={newChat} className="h-11 px-2 text-base font-bold tracking-tight">errand</button>
+        <span className="flex items-center gap-1">
+        <ThemeToggle theme={theme} onToggle={toggleTheme} />
         <button
           type="button"
           onClick={newChat}
@@ -349,6 +358,7 @@ export default function ChatApp() {
         >
           <IconPlus />
         </button>
+        </span>
       </header>
 
       <main className="flex-1 overflow-y-auto py-2" aria-live="polite">
@@ -463,7 +473,7 @@ export default function ChatApp() {
                           rel="noopener noreferrer"
                           className="w-28 shrink-0"
                         >
-                          <div className="h-28 overflow-hidden rounded-2xl bg-[#2A2B31]">
+                          <div className="h-28 overflow-hidden rounded-2xl bg-[var(--placeholder)]">
                             {p.imageUrl && (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={p.imageUrl} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
