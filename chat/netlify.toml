@@ -8,7 +8,7 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Harmless values that also appear in the code (not passwords), so the secrets check skips them.
+# Public values (NEXT_PUBLIC_ ones are sent to the browser by design) and harmless names, so the secrets check skips them.
 # Real keys (OpenAI, R2 access keys, Supabase) are still checked.
 [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_TEAM_WHATSAPP,OPENAI_MODEL,R2_BUCKET"
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_MEDIA_URL,NEXT_PUBLIC_TEAM_WHATSAPP,NEXT_PUBLIC_MARKET_URL,OPENAI_MODEL,R2_BUCKET"
