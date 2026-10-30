@@ -5,18 +5,18 @@ import { budgetTag, formatNaira } from "@/lib/format";
 type Props = {
   product: MarketProduct;
   variant?: "standard" | "budget" | "discover";
+  aspect?: string; // picture height, so the grid can be uneven
 };
 
-export default function ProductCard({ product, variant = "standard" }: Props) {
+export default function ProductCard({ product, variant = "standard", aspect = "aspect-[4/5]" }: Props) {
   // Tapping a card opens the VENDOR's storefront: Ndu promotes vendors, not single products.
   const href = `/s/${product.vendorSlug}?from=market&product=${product.id}`;
   const initial = product.vendorName.charAt(0).toUpperCase();
 
   return (
     <Link href={href} className="group block">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-gray-100">
-        {/* Grey placeholder until real photos arrive */}
-        <div className="flex h-full items-center justify-center p-3 text-center text-xs text-gray-400">
+      <div className={`relative overflow-hidden rounded-2xl bg-gray-100 ${aspect}`}>
+        <div className="flex h-full items-center justify-center p-3 text-center text-xs text-gray-400 transition duration-500 group-hover:scale-[1.04]">
           {product.name}
         </div>
 

@@ -1,30 +1,43 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
-import { logHandoff, searchVendors, type VendorResult } from "@/app/actions";
+import { logHandoff, recentFinds, searchVendors, type Find, type SearchPrefs, type VendorResult } from "@/app/actions";
+import { normaliseArea } from "@/lib/areas";
+import { EXPERIMENTS } from "@/lib/experiments";
 import { formatNaira } from "@/lib/format";
+import { shrinkPhoto } from "@/lib/photo";
+import { formatPrice } from "@/lib/price";
 import Composer from "./Composer";
+import { ChristmasBadge, FestiveBackdrop } from "./Festive";
+import JustFound from "./JustFound";
+import QuickChips from "./QuickChips";
+import Searching from "./Searching";
+import { isChristmasEdition } from "@/lib/season";
 import ResultCard from "./ResultCard";
 import { IconGift, IconImage, IconPerson, IconPlus, IconShirt, IconSparkle } from "./Icons";
 
 const TEAM_WHATSAPP = (process.env.NEXT_PUBLIC_TEAM_WHATSAPP ?? "").replace(/\D/g, "");
 const MARKET_URL = process.env.NEXT_PUBLIC_MARKET_URL ?? "";
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+const CHRISTMAS = isChristmasEdition();
 
 type SortKey = "best" | "low" | "high" | "new";
-type UserMsg = { id: string; role: "user"; text: string; imageUrl?: string };
+type UserMsg = { id: string; role: "user"; text: string; imageUrl?: string; tags?: string };
 type ResultsMsg = {
   id: string;
   role: "errand";
   kind: "results";
   request: string;
+  reply: string;
   results: VendorResult[];
   budgetKobo: number | null;
   shown: number;
   sort: SortKey;
+  openVendor: string | null;
 };
 type NoteMsg = { id: string; role: "errand"; kind: "note"; text: string; request: string };
-type Msg = UserMsg | ResultsMsg | NoteMsg;
+type QuestionMsg = { id: string; role: "errand"; kind: "question"; text: string; options: string[]; request: string };
+type Msg = UserMsg | ResultsMsg | NoteMsg | QuestionMsg;
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "best", label: "Best match" },
@@ -33,19 +46,24 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "new", label: "Newest" },
 ];
 
+// Examples of what errand is for: the hard-to-find, the urgent, the specific.
 const SUGGESTIONS = [
-  { Icon: IconGift, text: "Christmas gift for my sister under ₦15k", photo: false },
-  { Icon: IconShirt, text: "New year fit for a December party", photo: false },
-  { Icon: IconSparkle, text: "Toys and clothes for my kids", photo: false },
+  { Icon: IconSparkle, text: "Baileys delivered to Marian by 1am", photo: false },
+  { Icon: IconShirt, text: "Yogurt culture around Atekong", photo: false },
+  { Icon: IconGift, text: "Gift box for my babe under ₦20k", photo: false },
   { Icon: IconImage, text: "Find this from a photo", photo: true },
 ];
 
+// "Ask for price" products have no price: they go last when sorting by price.
+const low = (r: VendorResult) => r.priceKobo ?? Number.POSITIVE_INFINITY;
+const high = (r: VendorResult) => r.priceKobo ?? Number.NEGATIVE_INFINITY;
+
 function sortResults(list: VendorResult[], sort: SortKey) {
   const copy = [...list];
-  if (sort === "low") copy.sort((a, b) => a.priceKobo - b.priceKobo);
-  else if (sort === "high") copy.sort((a, b) => b.priceKobo - a.priceKobo);
+  if (sort === "low") copy.sort((a, b) => low(a) - low(b));
+  else if (sort === "high") copy.sort((a, b) => high(b) - high(a));
   else if (sort === "new") copy.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  else copy.sort((a, b) => b.score - a.score || a.priceKobo - b.priceKobo);
+  else copy.sort((a, b) => a.rank - b.rank); // errand's fair order
   return copy;
 }
 
@@ -53,6 +71,33 @@ export default function ChatApp() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [prefs, setPrefsState] = useState<SearchPrefs>({});
+  const [finds, setFinds] = useState<Find[]>([]);
+
+  // Remember the buyer's area on this phone (just a convenience; fine if it's not available).
+  useEffect(() => {
+    try {
+      const saved = normaliseArea(localStorage.getItem("errand-area") ?? "");
+      if (saved) setPrefsState((p) => ({ ...p, area: saved }));
+    } catch {}
+  }, []);
+  function setPrefs(next: SearchPrefs) {
+    setPrefsState(next);
+    try {
+      if (next.area) localStorage.setItem("errand-area", next.area);
+      else localStorage.removeItem("errand-area");
+    } catch {}
+  }
+
+  // "Just found" feed: load now, then refresh every minute.
+  useEffect(() => {
+    if (!EXPERIMENTS.justFound) return;
+    const load = () => void recentFinds().then(setFinds).catch(() => {});
+    load();
+    const t = setInterval(load, 60_000);
+    return () => clearInterval(t);
+  }, []);
   const [notice, setNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const counter = useRef(0);
@@ -68,18 +113,39 @@ export default function ChatApp() {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, isPending]);
 
-  function runSearch(request: string, budgetOverrideKobo: number | null = null) {
+  function runSearch(
+    request: string,
+    opts: { budgetOverrideKobo?: number | null; asked?: boolean; photoFile?: File | null } = {},
+  ) {
     startTransition(async () => {
-      const res = await searchVendors(request, budgetOverrideKobo);
+      let photo: string | null = null;
+      if (opts.photoFile) {
+        try {
+          photo = await shrinkPhoto(opts.photoFile);
+        } catch {
+          add({ id: nextId(), role: "errand", kind: "note", request: request || "Item from my photo", text: "I couldn't open that photo. Try another one, or describe it in a few words." });
+          return;
+        }
+      }
+
+      const res = await searchVendors({
+        text: request,
+        budgetOverrideKobo: opts.budgetOverrideKobo ?? null,
+        asked: opts.asked ?? false,
+        photo,
+        prefs: EXPERIMENTS.quickChips ? prefs : undefined,
+      });
       if (!res.ok) {
-        add({ id: nextId(), role: "errand", kind: "note", text: res.error, request });
+        add({ id: nextId(), role: "errand", kind: "note", text: res.error, request: request || "Item from my photo" });
+      } else if (res.kind === "question") {
+        add({ id: nextId(), role: "errand", kind: "question", text: res.question, options: res.options, request: res.request });
       } else if (res.results.length === 0) {
         add({
           id: nextId(),
           role: "errand",
           kind: "note",
-          request,
-          text: budgetOverrideKobo
+          request: res.request,
+          text: opts.budgetOverrideKobo
             ? "Nothing cheaper in Ndu stores right now. Want a real person to hunt for a better deal?"
             : "I couldn't find that in Ndu stores yet. Our team can hunt it down for you.",
         });
@@ -88,12 +154,15 @@ export default function ChatApp() {
           id: nextId(),
           role: "errand",
           kind: "results",
-          request,
+          request: res.request,
+          reply: res.reply,
           results: res.results,
           budgetKobo: res.budgetKobo,
           shown: 3,
           sort: "best",
+          openVendor: null,
         });
+        if (EXPERIMENTS.justFound) void recentFinds().then(setFinds).catch(() => {}); // the feed picks up this find
       }
     });
   }
@@ -102,23 +171,29 @@ export default function ChatApp() {
     const text = (textArg ?? input).trim();
     if (isPending || (!text && !image)) return;
 
-    add({ id: nextId(), role: "user", text, imageUrl: image ?? undefined });
+    const photoFile = image ? imageFile : null;
+    const tags = EXPERIMENTS.quickChips
+      ? [prefs.tonight && "🌙 Tonight", prefs.delivered && "🛵 Delivered", prefs.area && `📍 ${prefs.area}`].filter(Boolean).join(" · ")
+      : "";
+    add({ id: nextId(), role: "user", text, imageUrl: image ?? undefined, tags: tags || undefined });
     setInput("");
     setImage(null);
+    setImageFile(null);
     setNotice(null);
 
-    if (!text) {
-      // Photo only: honest about what works today.
-      add({
-        id: nextId(),
-        role: "errand",
-        kind: "note",
-        request: "I have a photo of what I want",
-        text: "Nice pick. Photo search is coming soon, so tell me what it is in a few words (like “red lace gown, size 12”). Or hand it to a real person and send them the photo on WhatsApp.",
-      });
+    // If errand just asked a question, this message is the answer: search with both together.
+    const last = [...messages].reverse().find((m) => m.role === "errand");
+    if (last && last.kind === "question" && text && !photoFile) {
+      runSearch(`${last.request}, ${text}`, { asked: true });
       return;
     }
-    runSearch(text);
+    runSearch(text, { photoFile });
+  }
+
+  function answer(m: QuestionMsg, option: string) {
+    if (isPending) return;
+    add({ id: nextId(), role: "user", text: option });
+    runSearch(`${m.request}, ${option}`, { asked: true });
   }
 
   function pickImage(file: File) {
@@ -132,12 +207,24 @@ export default function ChatApp() {
     }
     if (image) URL.revokeObjectURL(image);
     setImage(URL.createObjectURL(file));
+    setImageFile(file);
     setNotice(null);
   }
 
   function clearImage() {
     if (image) URL.revokeObjectURL(image);
     setImage(null);
+    setImageFile(null);
+  }
+
+  function toggleVendor(id: string, slug: string) {
+    setMessages((ms) =>
+      ms.map((m) =>
+        m.role === "errand" && m.kind === "results" && m.id === id
+          ? { ...m, openVendor: m.openVendor === slug ? null : slug }
+          : m,
+      ),
+    );
   }
 
   function newChat() {
@@ -159,9 +246,13 @@ export default function ChatApp() {
   }
 
   function cheaper(m: ResultsMsg) {
-    const lowest = Math.min(...m.results.map((r) => r.priceKobo));
+    const prices = m.results.map((r) => r.priceKobo).filter((n): n is number => n !== null);
     add({ id: nextId(), role: "user", text: "Cheaper options" });
-    runSearch(m.request, Math.floor(lowest * 0.9));
+    if (prices.length === 0) {
+      add({ id: nextId(), role: "errand", kind: "note", request: m.request, text: "These vendors share prices on request. A real person can compare them for you." });
+      return;
+    }
+    runSearch(m.request, { budgetOverrideKobo: Math.floor(Math.min(...prices) * 0.9), asked: true });
   }
 
   function handOff(request: string) {
@@ -192,21 +283,28 @@ export default function ChatApp() {
   // ---------- Home: before the first message ----------
   if (messages.length === 0) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-xl flex-col px-4 pb-6 pt-3">
-        <header className="flex h-11 items-center justify-between">
-          <span className="text-lg font-bold tracking-tight">errand</span>
-          <a href={`${MARKET_URL}/vendor/signup`} className="text-sm text-mute hover:text-snow">Sell on Ndu</a>
+      <>
+      {CHRISTMAS && <FestiveBackdrop />}
+      <div className="relative z-10 mx-auto flex min-h-dvh max-w-xl flex-col px-4 pb-6 pt-7">
+        <header className="flex h-11 items-center justify-between gap-2">
+          <span className="flex items-center gap-2">
+            <span className="text-lg font-bold tracking-tight">errand</span>
+            {CHRISTMAS && <ChristmasBadge />}
+          </span>
+          <a href={`${MARKET_URL}/vendor/signup`} className="shrink-0 text-sm text-mute hover:text-snow">Sell on Ndu</a>
         </header>
 
         <main className="flex flex-1 flex-col justify-end gap-7 pb-5">
           <div className="px-1">
             <h1 className="text-[42px] font-bold leading-[1.02] tracking-tight">
-              What are we <span className="text-accent">buying</span> today?
+              What do you want to <span className="text-accent">buy</span> today?
             </h1>
             <p className="mt-3 text-base leading-relaxed text-mute">
-              Tell me what you need. I&apos;ll find trusted vendors in Calabar.
+              Even the hard-to-find, even at 2am. Say what, where and when, and I&apos;ll find Calabar vendors who can deliver.
             </p>
           </div>
+
+          {EXPERIMENTS.justFound && <JustFound finds={finds} onPick={(name) => send(name)} />}
 
           <div className="grid grid-cols-2 gap-2.5">
             {SUGGESTIONS.map(({ Icon, text, photo }) => (
@@ -223,18 +321,18 @@ export default function ChatApp() {
           </div>
         </main>
 
+        {EXPERIMENTS.quickChips && <QuickChips prefs={prefs} onChange={setPrefs} />}
         {composer(true)}
         <p className="mt-3 text-center text-xs text-mute">Vendors verified by Ndu · You pay them directly</p>
       </div>
+      </>
     );
   }
 
   // ---------- Chat: after the first message ----------
-  const actions = (m: ResultsMsg | NoteMsg) => (
+  const actions = (m: ResultsMsg | NoteMsg | QuestionMsg) => (
     <div className="flex flex-wrap gap-2 px-4">
-      {m.kind === "results" && m.shown < m.results.length && (
-        <Chip onClick={() => moreLikeThis(m.id)}>More like this</Chip>
-      )}
+      {m.kind === "results" && m.shown < m.results.length && <Chip onClick={() => moreLikeThis(m.id)}>More like this</Chip>}
       {m.kind === "results" && <Chip onClick={() => cheaper(m)}>Cheaper</Chip>}
       <button
         type="button"
@@ -247,9 +345,14 @@ export default function ChatApp() {
   );
 
   return (
-    <div className="mx-auto flex h-dvh max-w-xl flex-col">
+    <>
+    {CHRISTMAS && <FestiveBackdrop />}
+    <div className="relative z-10 mx-auto flex h-dvh max-w-xl flex-col pt-4">
       <header className="flex items-center justify-between px-3 py-2">
-        <button type="button" onClick={newChat} className="h-11 px-2 text-base font-bold tracking-tight">errand</button>
+        <span className="flex items-center gap-1.5">
+          <button type="button" onClick={newChat} className="h-11 px-2 text-base font-bold tracking-tight">errand</button>
+          {CHRISTMAS && <ChristmasBadge small />}
+        </span>
         <button
           type="button"
           onClick={newChat}
@@ -275,6 +378,7 @@ export default function ChatApp() {
                       {m.text}
                     </p>
                   )}
+                  {m.tags && <p className="text-[11px] text-mute">{m.tags}</p>}
                 </div>
               );
             }
@@ -288,12 +392,30 @@ export default function ChatApp() {
               );
             }
 
+            if (m.kind === "question") {
+              return (
+                <section key={m.id} className="flex flex-col gap-3">
+                  <p className="px-4 text-[15px] leading-relaxed">{m.text}</p>
+                  {m.id === lastErrandId && (
+                    <div className="flex flex-wrap gap-2 px-4">
+                      {m.options.map((o) => (
+                        <Chip key={o} onClick={() => answer(m, o)}>{o}</Chip>
+                      ))}
+                    </div>
+                  )}
+                  {m.id === lastErrandId && <p className="px-4 text-xs text-mute">Or type your answer below.</p>}
+                </section>
+              );
+            }
+
             const n = m.results.length;
+            const open = m.openVendor ? m.results.find((r) => r.vendorSlug === m.openVendor) : undefined;
             return (
-              <section key={m.id} className="flex flex-col gap-3" aria-label="Vendors found">
+              <section key={m.id} className="flex flex-col gap-3" aria-label="Products found">
                 <div className="px-4">
-                  <p className="text-[15px] leading-relaxed">
-                    Say less. {n} Calabar {n === 1 ? "vendor has" : "vendors have"} it.{n > 1 ? " Swipe to compare." : ""}
+                  <p className="text-[15px] leading-relaxed">{m.reply}</p>
+                  <p className="mt-0.5 text-xs text-mute">
+                    {n} Calabar {n === 1 ? "vendor" : "vendors"}{n > 1 ? " · swipe to compare" : ""} · ranked fairly, nobody pays to be on top
                   </p>
                   {m.budgetKobo && <p className="mt-0.5 text-xs text-mute">Up to {formatNaira(m.budgetKobo)}</p>}
                 </div>
@@ -321,22 +443,73 @@ export default function ChatApp() {
                   {sortResults(m.results, m.sort)
                     .slice(0, m.shown)
                     .map((r) => (
-                      <ResultCard key={r.vendorSlug} r={r} marketUrl={MARKET_URL} />
+                      <ResultCard
+                        key={r.productId}
+                        r={r}
+                        marketUrl={MARKET_URL}
+                        moreOpen={m.openVendor === r.vendorSlug}
+                        onToggleMore={() => toggleVendor(m.id, r.vendorSlug)}
+                      />
                     ))}
                 </div>
+
+                {open && (
+                  <div className="mx-4 rounded-[22px] border border-line bg-panel p-3" aria-label={`More from ${open.vendorName}`}>
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <p className="truncate text-sm font-semibold">More from {open.vendorName}</p>
+                      <a
+                        href={`${MARKET_URL}/s/${open.vendorSlug}?from=chat`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 text-[13px] font-semibold text-accent"
+                      >
+                        Visit store →
+                      </a>
+                    </div>
+                    <div className="flex gap-2 overflow-x-auto [scrollbar-width:none]">
+                      {open.more.map((p) => (
+                        <a
+                          key={p.productId}
+                          href={`${MARKET_URL}/s/${open.vendorSlug}/p/${p.productId}?from=chat`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-28 shrink-0"
+                        >
+                          <div className="h-28 overflow-hidden rounded-2xl bg-[#2A2B31]">
+                            {p.imageUrl && (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={p.imageUrl} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
+                            )}
+                          </div>
+                          <p className="mt-1 text-[13px] font-bold">{formatPrice(p)}</p>
+                          <p className="truncate text-xs text-mute">{p.name}</p>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {m.id === lastErrandId && actions(m)}
               </section>
             );
           })}
 
-          {isPending && <p className="animate-pulse px-4 text-sm text-mute">Checking Calabar vendors…</p>}
+          {isPending &&
+            (EXPERIMENTS.searchingAnimation ? (
+              <Searching area={prefs.area} tonight={prefs.tonight} delivered={prefs.delivered} />
+            ) : (
+              <p className="animate-pulse px-4 text-sm text-mute">Checking Calabar vendors…</p>
+            ))}
           <div ref={endRef} />
         </div>
       </main>
 
-      <div className="px-4 pb-5 pt-2">{composer(false)}</div>
+      <div className="px-4 pb-5 pt-2">
+        {EXPERIMENTS.quickChips && <QuickChips prefs={prefs} onChange={setPrefs} />}
+        {composer(false)}
+      </div>
     </div>
+    </>
   );
 }
 

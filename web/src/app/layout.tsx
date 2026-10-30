@@ -1,20 +1,23 @@
-import type { Metadata, Viewport } from "next";
-import { Space_Grotesk } from "next/font/google";
+import type { Metadata } from "next";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-grotesk", display: "swap" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "errand — chat to buy anything in Calabar",
-  description: "Tell us what you need. We find trusted Calabar vendors.",
+  title: "Ndu — Calabar's finest vendors. One place.",
+  description: "Find any item from verified vendors in Calabar. Order. Get delivered.",
 };
-
-// Colours the phone's top bar to match the dark page.
-export const viewport: Viewport = { themeColor: "#0E0F12" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={grotesk.variable}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased">{children}</body>
     </html>
   );

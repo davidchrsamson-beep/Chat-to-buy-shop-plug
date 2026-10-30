@@ -1,7 +1,18 @@
+import LightString from "@/components/ui/LightString";
+import { isChristmasEdition } from "@/lib/season";
+
 export default function Hero() {
+  const christmas = isChristmasEdition();
+
   return (
-    <section className="mx-auto max-w-5xl px-5 pt-10 pb-6 text-center">
-      <h1 className="text-3xl font-bold leading-tight sm:text-4xl">
+    <section className="relative mx-auto max-w-5xl px-5 pt-8 pb-6 text-center">
+      {christmas && <LightString className="absolute inset-x-0 top-1" />}
+      {christmas && (
+        <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-white">
+          <span className="text-led">✦</span> Christmas Edition <span className="text-led">✦</span>
+        </p>
+      )}
+      <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl">
         Calabar&apos;s finest vendors.<br />One place.
       </h1>
       <p className="mt-3 text-gray-600">

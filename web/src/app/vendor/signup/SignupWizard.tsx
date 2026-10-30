@@ -14,7 +14,8 @@ export type SignupCategory = {
   subcategories: { id: number; name: string }[];
 };
 
-export type Plan = { priceKobo: number; periodDays: number; trialDays: number };
+// What the last step says about listing in search and the market.
+export type ListingOffer = { freeListingUntil: string | null; monthlyKobo: number };
 
 const ICONS: Record<string, string> = {
   fashion: "👗",
@@ -44,7 +45,7 @@ const emptyForm: SignupInput = {
   specialOffer: "",
 };
 
-export default function SignupWizard({ categories, plan }: { categories: SignupCategory[]; plan: Plan }) {
+export default function SignupWizard({ categories, offer }: { categories: SignupCategory[]; offer: ListingOffer }) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<SignupInput>(emptyForm);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -52,8 +53,6 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
   const [isPending, startTransition] = useTransition();
 
   const chosen = categories.filter((c) => form.categories.includes(c.slug));
-  const months = Math.max(1, Math.round(plan.periodDays / 30));
-  const periodLabel = months === 1 ? "1 month" : `${months} months`;
 
   function update<K extends keyof SignupInput>(key: K, value: SignupInput[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -83,9 +82,7 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
 
   function toggleCategory(slug: string) {
     setForm((f) => {
-      const nextCats = f.categories.includes(slug)
-        ? f.categories.filter((c) => c !== slug)
-        : [...f.categories, slug];
+      const nextCats = f.categories.includes(slug) ? f.categories.filter((c) => c !== slug) : [...f.categories, slug];
       // Drop subtypes that belong to a category that was just un-ticked.
       const allowed = new Set(
         categories.filter((c) => nextCats.includes(c.slug)).flatMap((c) => c.subcategories.map((s) => s.id)),
@@ -98,9 +95,7 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
   function toggleSubcategory(id: number) {
     setForm((f) => ({
       ...f,
-      subcategories: f.subcategories.includes(id)
-        ? f.subcategories.filter((s) => s !== id)
-        : [...f.subcategories, id],
+      subcategories: f.subcategories.includes(id) ? f.subcategories.filter((s) => s !== id) : [...f.subcategories, id],
     }));
   }
 
@@ -117,109 +112,51 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
 
   return (
     <div>
-      {/* Progress: one bar per step */}
-      <div className="mb-6 flex gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={TOTAL_STEPS} aria-valuenow={step} aria-label={`Step ${step} of ${TOTAL_STEPS}`}>
+      <div
+        className="mb-6 flex gap-1.5"
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={TOTAL_STEPS}
+        aria-valuenow={step}
+        aria-label={`Step ${step} of ${TOTAL_STEPS}`}
+      >
         {Array.from({ length: TOTAL_STEPS }, (_, i) => (
           <span key={i} className={`h-1.5 flex-1 rounded-full ${i < step ? "bg-brand" : "bg-gray-200"}`} />
         ))}
       </div>
 
       {step > 1 && (
-        <button type="button" onClick={() => goTo(step - 1)} className="mb-4 text-sm text-gray-500 hover:text-ink">
+        <button type="button" onClick={() => goTo(step - 1)} className="mb-4 min-h-11 text-sm text-gray-500 hover:text-ink">
           ‹ Back
         </button>
       )}
 
       {serverError && (
-        <p role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          ⚠ {serverError}
-        </p>
+        <p role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">⚠ {serverError}</p>
       )}
 
       {step === 1 && (
         <section>
-          <h1 className="text-2xl font-bold">Create your account</h1>
+          <h1 className="text-2xl font-bold">Create your free store</h1>
           <p className="mt-1 text-sm text-gray-500">Let&apos;s get your store set up in minutes</p>
 
           <div className="mt-6 space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              <Field
-                label="Full Name"
-                name="fullName"
-                autoComplete="name"
-                placeholder="Jane Bassey"
-                value={form.fullName}
-                onChange={(e) => update("fullName", e.target.value)}
-                error={errors.fullName}
-              />
-              <Field
-                label="Business Name"
-                name="businessName"
-                autoComplete="organization"
-                placeholder="Amaka's Arts"
-                value={form.businessName}
-                onChange={(e) => update("businessName", e.target.value)}
-                error={errors.businessName}
-              />
+              <Field label="Full Name" name="fullName" autoComplete="name" placeholder="Jane Bassey" value={form.fullName} onChange={(e) => update("fullName", e.target.value)} error={errors.fullName} />
+              <Field label="Business Name" name="businessName" autoComplete="organization" placeholder="Amaka's Arts" value={form.businessName} onChange={(e) => update("businessName", e.target.value)} error={errors.businessName} />
             </div>
-            <Field
-              label="Phone / WhatsApp"
-              name="whatsapp"
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              placeholder="08012345678"
-              hint="Buyers will reach you on this WhatsApp number."
-              value={form.whatsapp}
-              onChange={(e) => update("whatsapp", e.target.value)}
-              error={errors.whatsapp}
-            />
-            <Field
-              label="Email Address"
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              hint="You'll use this to log in."
-              value={form.email}
-              onChange={(e) => update("email", e.target.value)}
-              error={errors.email}
-            />
-            <Field
-              label="Location (neighbourhood)"
-              name="neighbourhood"
-              placeholder="e.g. Marian, Watt, Calabar South"
-              hint="Ndu currently operates in Calabar only."
-              value={form.neighbourhood}
-              onChange={(e) => update("neighbourhood", e.target.value)}
-              error={errors.neighbourhood}
-            />
+            <Field label="Phone / WhatsApp" name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" placeholder="08012345678" hint="Buyers will reach you on this WhatsApp number." value={form.whatsapp} onChange={(e) => update("whatsapp", e.target.value)} error={errors.whatsapp} />
+            <Field label="Email Address" name="email" type="email" autoComplete="email" placeholder="you@example.com" hint="You'll use this to log in." value={form.email} onChange={(e) => update("email", e.target.value)} error={errors.email} />
+            <Field label="Location (neighbourhood)" name="neighbourhood" placeholder="e.g. Marian, Watt, Calabar South" hint="Ndu currently operates in Calabar only." value={form.neighbourhood} onChange={(e) => update("neighbourhood", e.target.value)} error={errors.neighbourhood} />
 
             <p className="pt-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400">Create login password</p>
-            <PasswordField
-              label="Password"
-              name="password"
-              autoComplete="new-password"
-              placeholder="Min. 8 characters"
-              value={form.password}
-              onChange={(e) => update("password", e.target.value)}
-              error={errors.password}
-            />
-            <PasswordField
-              label="Confirm Password"
-              name="confirmPassword"
-              autoComplete="new-password"
-              placeholder="Repeat password"
-              value={form.confirmPassword}
-              onChange={(e) => update("confirmPassword", e.target.value)}
-              error={errors.confirmPassword}
-            />
+            <PasswordField label="Password" name="password" autoComplete="new-password" placeholder="Min. 8 characters" value={form.password} onChange={(e) => update("password", e.target.value)} error={errors.password} />
+            <PasswordField label="Confirm Password" name="confirmPassword" autoComplete="new-password" placeholder="Repeat password" value={form.confirmPassword} onChange={(e) => update("confirmPassword", e.target.value)} error={errors.confirmPassword} />
           </div>
 
           <PrimaryButton onClick={next}>Continue</PrimaryButton>
           <p className="mt-4 text-center text-sm text-gray-500">
-            Already have a store?{" "}
-            <Link href="/vendor/login" className="font-semibold text-brand">Log in</Link>
+            Already have a store? <Link href="/vendor/login" className="font-semibold text-brand">Log in</Link>
           </p>
         </section>
       )}
@@ -247,9 +184,7 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
               );
             })}
           </div>
-          {errors.categories && (
-            <p role="alert" className="mt-3 text-sm text-red-600">{errors.categories}</p>
-          )}
+          {errors.categories && <p role="alert" className="mt-3 text-sm text-red-600">{errors.categories}</p>}
           <PrimaryButton onClick={next}>Continue</PrimaryButton>
         </section>
       )}
@@ -271,7 +206,7 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
                         type="button"
                         aria-pressed={on}
                         onClick={() => toggleSubcategory(s.id)}
-                        className={`rounded-full px-4 py-2 text-sm transition ${
+                        className={`min-h-10 rounded-full px-4 py-2 text-sm transition ${
                           on ? "bg-ink text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         }`}
                       >
@@ -293,25 +228,10 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
           <p className="mt-1 text-sm text-gray-500">Optional. You can update this anytime from your dashboard.</p>
           <div className="mt-6 space-y-4">
             <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-sm text-gray-500">
-              📷 You can add your logo and cover photo from your dashboard once your store is open.
+              📷 You can add your logo and cover photos from your dashboard once your store is open.
             </div>
-            <Field
-              label="Store tagline (optional)"
-              name="tagline"
-              placeholder="Your Style. Your Story."
-              maxLength={120}
-              value={form.tagline}
-              onChange={(e) => update("tagline", e.target.value)}
-            />
-            <Field
-              label="Discount / special offer (optional)"
-              name="specialOffer"
-              placeholder="e.g. 10% off all Ankara this week"
-              maxLength={120}
-              hint="Shown as a banner on your storefront."
-              value={form.specialOffer}
-              onChange={(e) => update("specialOffer", e.target.value)}
-            />
+            <Field label="Store tagline (optional)" name="tagline" placeholder="Your Style. Your Story." maxLength={120} value={form.tagline} onChange={(e) => update("tagline", e.target.value)} />
+            <Field label="Discount / special offer (optional)" name="specialOffer" placeholder="e.g. 10% off all Ankara this week" maxLength={120} hint="Shown as a banner on your storefront." value={form.specialOffer} onChange={(e) => update("specialOffer", e.target.value)} />
           </div>
           <PrimaryButton onClick={next}>Continue</PrimaryButton>
         </section>
@@ -321,10 +241,12 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
         <section className="text-center">
           <h1 className="text-2xl font-bold">Your store is almost ready!</h1>
           <p className="mt-2 text-sm text-gray-600">
-            <strong>{plan.trialDays} days free</strong>, no payment needed yet.
+            <strong>Your storefront is free</strong>, today and always.
           </p>
           <p className="text-sm text-gray-600">
-            After your trial, just {formatNaira(plan.priceKobo)} for {periodLabel}.
+            {offer.freeListingUntil
+              ? `You're also listed free in errand search and the Ndu market until ${offer.freeListingUntil}.`
+              : `To appear in errand search and the Ndu market: from ${formatNaira(offer.monthlyKobo)} a month.`}
           </p>
 
           <div className="mt-6 rounded-2xl bg-brand-tint p-4 text-left text-sm">
@@ -334,13 +256,13 @@ export default function SignupWizard({ categories, plan }: { categories: SignupC
 
           <ul className="mt-3 space-y-2 rounded-2xl bg-amber-50 p-4 text-left text-sm text-gray-700">
             <li>✦ Your own storefront link for your bio</li>
-            <li>✦ Listed in the Ndu market</li>
-            <li>✦ Unlimited products, up to 20 photos per upload</li>
-            <li>✦ WhatsApp order leads in your dashboard</li>
+            <li>✦ Buyers order from you directly on WhatsApp</li>
+            <li>✦ Unlimited products, up to 8 photos each</li>
+            <li>✦ See your visits and WhatsApp orders in your dashboard</li>
           </ul>
 
           <PrimaryButton onClick={submit} disabled={isPending}>
-            {isPending ? "Opening your store…" : "Activate My Free Trial 🚀"}
+            {isPending ? "Opening your store…" : "Open My Free Store 🚀"}
           </PrimaryButton>
           <p className="mt-3 text-xs text-gray-400">No card required.</p>
         </section>

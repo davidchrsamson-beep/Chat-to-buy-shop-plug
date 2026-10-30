@@ -1,63 +1,119 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import CopyLink from "@/components/vendor/CopyLink";
+import DashboardShell from "@/components/vendor/DashboardShell";
+import { describeListing, getListingStatus } from "@/lib/listing";
+import { loadMinSearchPhotos, requireVendor } from "@/lib/vendor";
 import { signOut, signOutEverywhere } from "../actions";
 
+const TONE = {
+  good: "border-brand/30 bg-brand-tint text-brand-dark",
+  warn: "border-amber-200 bg-amber-50 text-amber-900",
+  bad: "border-red-200 bg-red-50 text-red-800",
+};
+
 export default async function DashboardPage() {
-  const supabase = await createClient();
+  const { supabase, vendor, email } = await requireVendor();
+    if (!vendor) {
+    return (
+      <div className="mx-auto max-w-md px-5 py-16 text-center">
+        <p role="alert" className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
+          We couldn&apos;t find a store on this account. Please contact Ndu support.
+        </p>
+        <form action={signOut} className="mt-6">
+          <button className="min-h-11 rounded-xl border border-gray-200 px-5 font-semibold hover:border-brand">
+            Log out
+          </button>
+        </form>
+      </div>
+    );
+  }
 
-  // Who is this? getClaims checks the login is genuine, not just present.
-  const { data: auth } = await supabase.auth.getClaims();
-  if (!auth?.claims) redirect("/vendor/login");
-
-  const [{ data: vendor }, { data: sub }] = await Promise.all([
-    supabase.from("vendors").select("business_name, slug").eq("owner_id", auth.claims.sub).maybeSingle(),
-    supabase.from("subscriptions").select("kind, grace_ends_at").order("grace_ends_at", { ascending: false }).limit(1).maybeSingle(),
+  const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
+  const [listing, minPhotos, products, visits, leads] = await Promise.all([
+    getListingStatus(supabase, vendor.id),
+    loadMinSearchPhotos(supabase),
+    supabase.from("products").select("id, status, product_media(count)").eq("vendor_id", vendor.id).is("deleted_at", null),
+    supabase.from("visits").select("id", { count: "exact", head: true }).eq("vendor_id", vendor.id).gte("created_at", since),
+    supabase.from("leads").select("id", { count: "exact", head: true }).eq("vendor_id", vendor.id).gte("created_at", since),
   ]);
 
-  const daysLeft = sub
-    ? Math.max(0, Math.ceil((new Date(sub.grace_ends_at).getTime() - Date.now()) / 86_400_000))
-    : 0;
+  type Row = { status: string; product_media: { count: number }[] };
+  const rows = (products.data ?? []) as unknown as Row[];
+  const live = rows.filter((r) => r.status === "live");
+  const searchable = live.filter((r) => (r.product_media?.[0]?.count ?? 0) >= minPhotos);
+  const status = describeListing(listing);
+
+  const todo = [
+    { done: Boolean(vendor.logo_url) && vendor.hero_urls.length > 0, text: "Add your logo and cover photos", href: "/vendor/settings" },
+    { done: live.length >= 3, text: "Publish at least 3 products", href: "/vendor/products/new" },
+    {
+      done: live.length > 0 && searchable.length === live.length,
+      text: `Give every product ${minPhotos}+ photos from different angles, so it can appear in search`,
+      href: "/vendor/products",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-100 bg-white">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
-          <span className="font-serif text-xl font-bold">Ndu<span className="text-brand">.</span></span>
-          <form action={signOut}>
-            <button className="text-sm text-gray-500 hover:text-ink">Log out</button>
-          </form>
-        </div>
-      </header>
+    <DashboardShell active="overview" storeName={vendor.business_name}>
+      <h1 className="text-2xl font-bold">Welcome, {vendor.business_name} 👋</h1>
 
-      <main className="mx-auto max-w-3xl px-5 py-8">
-        {!vendor ? (
-          <p role="alert" className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
-            We couldn&apos;t find a store on this account. Please contact Ndu support.
-          </p>
-        ) : (
-          <>
-            <h1 className="text-2xl font-bold">Welcome, {vendor.business_name} 👋</h1>
-            <p className="mt-2 inline-block rounded-full bg-brand-tint px-3 py-1 text-sm font-medium text-brand-dark">
-              {sub?.kind === "trial" ? "Free trial" : "Subscription"}: {daysLeft} {daysLeft === 1 ? "day" : "days"} left
-            </p>
-
-            <div className="mt-6 rounded-2xl bg-white p-5 shadow-sm">
-              <p className="text-sm text-gray-500">Your storefront link</p>
-              <Link href={`/s/${vendor.slug}`} className="mt-1 block break-all font-semibold text-brand">
-                ndu.ng/s/{vendor.slug}
-              </Link>
-              <p className="mt-4 text-sm text-gray-500">
-                Products, batch upload and store settings arrive here next.
-              </p>
-            </div>
-
-            <form action={signOutEverywhere} className="mt-8">
-              <button className="text-xs text-gray-400 underline hover:text-ink">Log out of all devices</button>
-            </form>
-          </>
+      <div className={`mt-4 rounded-2xl border p-4 ${TONE[status.tone]}`}>
+        <p className="font-semibold">{status.title}</p>
+        <p className="mt-1 text-sm">{status.body}</p>
+        {status.tone !== "good" && (
+          <Link href="/vendor/listing" className="mt-3 inline-block text-sm font-semibold underline">See listing plans</Link>
         )}
-      </main>
+      </div>
+
+      <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm">
+        <p className="text-sm text-gray-500">Your free storefront link, for your bio and WhatsApp status</p>
+        <CopyLink path={`/s/${vendor.slug}`} />
+      </div>
+
+      <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat label="Live products" value={live.length} />
+        <Stat label="In search" value={searchable.length} />
+        <Stat label="Store visits (7 days)" value={visits.count ?? 0} />
+        <Stat label="WhatsApp orders (7 days)" value={leads.count ?? 0} />
+      </dl>
+
+      <section className="mt-6 rounded-2xl bg-white p-5 shadow-sm">
+        <h2 className="font-semibold">Get your store ready</h2>
+        <ul className="mt-3 space-y-2">
+          {todo.map((t) => (
+            <li key={t.text}>
+              <Link href={t.href} className="flex min-h-11 items-center gap-3 text-sm">
+                <span
+                  aria-hidden="true"
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                    t.done ? "bg-brand text-white" : "border border-gray-300 text-transparent"
+                  }`}
+                >
+                  ✓
+                </span>
+                <span className={t.done ? "text-gray-400 line-through" : ""}>{t.text}</span>
+                <span className="sr-only">{t.done ? "(done)" : "(to do)"}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div className="mt-8 space-y-1 text-xs text-gray-400">
+        {email && <p>Logged in as {email}</p>}
+        <form action={signOutEverywhere}>
+          <button className="underline hover:text-ink">Log out of all devices</button>
+        </form>
+      </div>
+    </DashboardShell>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-2xl bg-white p-4 shadow-sm">
+      <dt className="text-xs text-gray-500">{label}</dt>
+      <dd className="mt-1 text-2xl font-bold">{value}</dd>
     </div>
   );
 }

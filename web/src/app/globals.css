@@ -1,22 +1,93 @@
 @import "tailwindcss";
 
-/* errand's colours: dark night background, orange accent */
+/* Ndu's brand colours: bg-brand, text-ink, etc. */
 @theme {
-  --color-night: #0E0F12;        /* page background */
-  --color-panel: #17181C;        /* cards and input */
-  --color-line: #26272D;         /* thin borders */
-  --color-line-strong: #33343B;  /* chip borders */
-  --color-mute: #A1A1AA;         /* quiet text */
-  --color-snow: #F5F5F4;         /* main text */
-  --color-accent: #FF7A1A;       /* orange */
+  --color-brand: #059669;       /* emerald green */
+  --color-brand-dark: #047857;  /* green when pressed */
+  --color-brand-tint: #ecfdf5;  /* very light green boxes */
+  --color-ink: #111827;         /* near-black */
+  --color-led: #ffb020;         /* the glowing amber of moving display signs */
 }
 
 @theme inline {
-  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, serif;
 }
 
-html,
 body {
-  background: var(--color-night);
-  color: var(--color-snow);
+  background: #ffffff;
+  color: var(--color-ink);
+}
+
+/* ---------- Moving line: enters from the right edge, leaves at the left edge, repeats ---------- */
+@keyframes ndu-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+.ndu-marquee {
+  display: inline-block;
+  padding-left: 100%; /* start just outside the right edge */
+  animation: ndu-marquee var(--marquee-speed, 18s) linear infinite;
+}
+
+/* ---------- Storefront entrance: the doors open as the buyer walks in ---------- */
+@keyframes ndu-door-left {
+  0%, 30% { transform: translateX(0); }
+  100% { transform: translateX(-101%); }
+}
+@keyframes ndu-door-right {
+  0%, 30% { transform: translateX(0); }
+  100% { transform: translateX(101%); }
+}
+.ndu-door-left { animation: ndu-door-left 1.5s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+.ndu-door-right { animation: ndu-door-right 1.5s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+
+/* Text rises in, letters closing together (an embrace) */
+@keyframes ndu-rise {
+  from { opacity: 0; transform: translateY(18px); letter-spacing: 0.25em; }
+  to { opacity: 1; transform: none; }
+}
+.ndu-rise { opacity: 0; animation: ndu-rise 1s ease-out forwards; }
+
+/* The hero photo slowly settles */
+@keyframes ndu-settle {
+  from { transform: scale(1.12); }
+  to { transform: scale(1); }
+}
+.ndu-settle { animation: ndu-settle 7s ease-out forwards; }
+
+/* ---------- Christmas: lights, swinging baubles, the trumpet ---------- */
+@keyframes ndu-twinkle {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+.ndu-twinkle { animation: ndu-twinkle 1.6s ease-in-out infinite; }
+
+@keyframes ndu-swing {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+.ndu-swing { transform-origin: top center; animation: ndu-swing 3.2s ease-in-out infinite; }
+
+@keyframes ndu-toot {
+  0%, 68%, 100% { transform: rotate(0deg) scale(1); }
+  74% { transform: rotate(-7deg) scale(1.05); }
+  84% { transform: rotate(2deg) scale(1); }
+}
+.ndu-toot { transform-box: fill-box; transform-origin: left center; animation: ndu-toot 3.4s ease-in-out infinite; }
+
+@keyframes ndu-burst {
+  0%, 70% { opacity: 0; transform: scale(0.5); }
+  80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+.ndu-burst { transform-box: fill-box; transform-origin: left center; animation: ndu-burst 3.4s ease-out infinite; }
+
+/* People who set "reduce motion" get a calm, still page. */
+@media (prefers-reduced-motion: reduce) {
+  .ndu-marquee { animation: none; padding-left: 0; }
+  .ndu-settle, .ndu-twinkle, .ndu-swing, .ndu-toot { animation: none; }
+  .ndu-burst { animation: none; opacity: 0; }
+  .ndu-door-left, .ndu-door-right { display: none; }
+  .ndu-rise { animation: none; opacity: 1; }
 }
