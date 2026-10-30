@@ -13,8 +13,9 @@ import JustFound from "./JustFound";
 import QuickChips from "./QuickChips";
 import Searching from "./Searching";
 import { isChristmasEdition } from "@/lib/season";
+import ExampleCarousel from "./ExampleCarousel";
 import ResultCard from "./ResultCard";
-import { IconGift, IconImage, IconPerson, IconPlus, IconShirt, IconSparkle } from "./Icons";
+import { IconPerson, IconPlus } from "./Icons";
 
 const TEAM_WHATSAPP = (process.env.NEXT_PUBLIC_TEAM_WHATSAPP ?? "").replace(/\D/g, "");
 const MARKET_URL = process.env.NEXT_PUBLIC_MARKET_URL ?? "";
@@ -51,13 +52,7 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "new", label: "Newest" },
 ];
 
-// Examples of what errand is for: the hard-to-find, the urgent, the specific.
-const SUGGESTIONS = [
-  { Icon: IconSparkle, text: "Baileys delivered to Marian by 1am", photo: false },
-  { Icon: IconShirt, text: "Yogurt culture around Atekong", photo: false },
-  { Icon: IconGift, text: "Gift box for my babe under ₦20k", photo: false },
-  { Icon: IconImage, text: "Find this from a photo", photo: true },
-];
+
 
 // "Ask for price" products have no price: they go last when sorting by price.
 const low = (r: VendorResult) => r.priceKobo ?? Number.POSITIVE_INFINITY;
@@ -291,7 +286,7 @@ export default function ChatApp() {
       <>
       {NO_SIDEWAYS}
       {CHRISTMAS && <FestiveBackdrop />}
-      <div className="relative z-10 mx-auto flex min-h-dvh max-w-xl flex-col px-4 pb-6 pt-7">
+      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-xl flex-col px-4 pb-6 pt-7">
         <header className="flex h-11 items-center justify-between gap-2">
           <span className="flex items-center gap-2">
             <span className="text-lg font-bold tracking-tight">errand</span>
@@ -300,31 +295,17 @@ export default function ChatApp() {
           <a href={`${MARKET_URL}/vendor/signup`} className="shrink-0 text-sm text-mute hover:text-snow">Sell on Ndu</a>
         </header>
 
-        <main className="flex flex-1 flex-col justify-end gap-7 pb-5">
+        <main className="flex min-w-0 flex-1 flex-col justify-end gap-6 pb-5">
           <div className="px-1">
-            <h1 className="text-[42px] font-bold leading-[1.02] tracking-tight">
-              What do you want to <span className="text-accent">buy</span> today?
+            <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight">
+              Vendors are <span className="text-accent">always</span> active.
             </h1>
-            <p className="mt-3 text-base leading-relaxed text-mute">
-              Even the hard-to-find, even at 2am. Say what, where and when, and I&apos;ll find Calabar vendors who can deliver.
-            </p>
+            <p className="mt-3 text-base leading-relaxed text-mute">Order anything you want, day or late night.</p>
           </div>
 
           {EXPERIMENTS.justFound && <JustFound finds={finds} onPick={(name) => send(name)} />}
 
-          <div className="grid grid-cols-2 gap-2.5">
-            {SUGGESTIONS.map(({ Icon, text, photo }) => (
-              <button
-                key={text}
-                type="button"
-                onClick={() => (photo ? fileInputRef.current?.click() : send(text))}
-                className="flex min-h-26 flex-col gap-2.5 rounded-[20px] border border-line bg-panel p-3.5 text-left transition hover:border-line-strong"
-              >
-                <span className="text-accent"><Icon /></span>
-                <span className="text-sm leading-snug">{text}</span>
-              </button>
-            ))}
-          </div>
+          <ExampleCarousel onAsk={(text) => send(text)} onPhoto={() => fileInputRef.current?.click()} />
         </main>
 
         {EXPERIMENTS.quickChips && <QuickChips prefs={prefs} onChange={setPrefs} />}
@@ -354,7 +335,7 @@ export default function ChatApp() {
     <>
     {NO_SIDEWAYS}
       {CHRISTMAS && <FestiveBackdrop />}
-    <div className="relative z-10 mx-auto flex h-dvh max-w-xl flex-col pt-4">
+    <div className="relative z-10 mx-auto flex h-dvh w-full min-w-0 max-w-xl flex-col pt-4">
       <header className="flex items-center justify-between px-3 py-2">
         <span className="flex items-center gap-1.5">
           <button type="button" onClick={newChat} className="h-11 px-2 text-base font-bold tracking-tight">errand</button>

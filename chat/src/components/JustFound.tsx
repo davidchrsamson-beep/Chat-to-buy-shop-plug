@@ -27,7 +27,7 @@ export default function JustFound({ finds, onPick }: { finds: Find[]; onPick: (n
       type="button"
       onClick={() => onPick(f.productName)}
       aria-label={`Just found ${f.productName}${f.area ? ` in ${f.area}` : ""}. Tap to search for it.`}
-      className="flex w-full items-center gap-2.5 overflow-hidden rounded-full border border-line bg-panel/80 px-3.5 py-2.5 text-left backdrop-blur transition hover:border-line-strong"
+      className="flex w-full min-w-0 max-w-full items-center gap-2.5 overflow-hidden rounded-full border border-line bg-panel/80 px-3.5 py-2.5 text-left backdrop-blur transition hover:border-line-strong"
     >
       <span className="relative flex h-2 w-2 shrink-0" aria-hidden="true">
         <span className="errand-ping absolute inline-flex h-full w-full rounded-full bg-[#4ADE80]" />
