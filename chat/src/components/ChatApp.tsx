@@ -21,6 +21,11 @@ const MARKET_URL = process.env.NEXT_PUBLIC_MARKET_URL ?? "";
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const CHRISTMAS = isChristmasEdition();
 
+// Phones: the page must never slide sideways (wide decorations are trimmed at the screen edge).
+const NO_SIDEWAYS = (
+  <style>{`html, body { max-width: 100%; overflow-x: hidden; overflow-x: clip; overscroll-behavior-x: none; }`}</style>
+);
+
 type SortKey = "best" | "low" | "high" | "new";
 type UserMsg = { id: string; role: "user"; text: string; imageUrl?: string; tags?: string };
 type ResultsMsg = {
@@ -284,6 +289,7 @@ export default function ChatApp() {
   if (messages.length === 0) {
     return (
       <>
+      {NO_SIDEWAYS}
       {CHRISTMAS && <FestiveBackdrop />}
       <div className="relative z-10 mx-auto flex min-h-dvh max-w-xl flex-col px-4 pb-6 pt-7">
         <header className="flex h-11 items-center justify-between gap-2">
@@ -346,7 +352,8 @@ export default function ChatApp() {
 
   return (
     <>
-    {CHRISTMAS && <FestiveBackdrop />}
+    {NO_SIDEWAYS}
+      {CHRISTMAS && <FestiveBackdrop />}
     <div className="relative z-10 mx-auto flex h-dvh max-w-xl flex-col pt-4">
       <header className="flex items-center justify-between px-3 py-2">
         <span className="flex items-center gap-1.5">

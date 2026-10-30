@@ -14,6 +14,16 @@
   --font-serif: var(--font-playfair), Georgia, serif;
 }
 
+/* Phones: the page must never slide sideways. Anything wider than the screen
+   (moving text, decorations) is trimmed at the edge instead. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden; /* older phones */
+  overflow-x: clip; /* newer phones: same, and keeps sticky headers working */
+  overscroll-behavior-x: none;
+}
+
 body {
   background: #ffffff;
   color: var(--color-ink);
