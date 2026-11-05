@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { BRAND } from "@/lib/brand";
 import { isChristmasEdition } from "@/lib/season";
-import DeliveredCarousel from "./DeliveredCarousel";
+import DeliveredCarousel, { type Delivery } from "./DeliveredCarousel";
 import { ChristmasBadge, FestiveBackdrop } from "./Festive";
 import PlugFace from "./PlugFace";
 import RequestChat, { savedRequestCode } from "./RequestChat";
@@ -13,7 +13,7 @@ const CHRISTMAS = isChristmasEdition();
 
 // Shor plug: the home screen, and the request chat it opens.
 // (The earlier "errand" vendor search is kept in the code but no longer shown.)
-export default function ChatApp() {
+export default function ChatApp({ deliveries }: { deliveries?: Delivery[] }) {
   const { theme, toggle } = useTheme();
   const [chat, setChat] = useState<{ open: boolean; text: string }>({ open: false, text: "" });
   const [openCode, setOpenCode] = useState<string | null>(null);
@@ -71,7 +71,7 @@ export default function ChatApp() {
               <p className="mt-3 text-base leading-relaxed text-mute">Plugs are always active.</p>
             </div>
 
-            <DeliveredCarousel onAsk={(text) => openChat(text)} />
+            <DeliveredCarousel items={deliveries} onAsk={(text) => openChat(text)} />
           </main>
 
           <button

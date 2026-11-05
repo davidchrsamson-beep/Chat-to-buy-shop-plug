@@ -23,7 +23,9 @@ export async function logIn(_prev: FormState, formData: FormData): Promise<FormS
     // One message for wrong email OR wrong password, so nobody can test which emails have accounts.
     return { error: "Email or password is incorrect.", email };
   }
-  redirect("/vendor/dashboard");
+  // Shor plug team members go straight to their inbox; vendors to their dashboard.
+  const { data: isTeam } = await supabase.rpc("is_team");
+  redirect(isTeam === true ? "/team" : "/vendor/dashboard");
 }
 
 export async function requestPasswordReset(_prev: FormState, formData: FormData): Promise<FormState> {

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import {
   askDetails,
@@ -79,7 +80,10 @@ export default function TeamInbox({ pricing }: { pricing: Pricing }) {
       {/* Request list (on phones: hidden while a conversation is open) */}
       <aside className={`w-full shrink-0 flex-col border-r border-gray-200 bg-white md:flex md:w-80 ${openId ? "hidden" : "flex"}`}>
         <div className="border-b border-gray-100 p-4">
-          <h1 className="text-lg font-bold">Shor plug inbox</h1>
+          <div className="flex items-center justify-between gap-2">
+            <h1 className="text-lg font-bold">Shor plug inbox</h1>
+            <Link href="/team/strip" className="text-sm font-semibold text-brand">Photo strip →</Link>
+          </div>
           <div className="mt-2 flex gap-2 text-sm">
             {(["active", "all"] as const).map((f) => (
               <button

@@ -3,33 +3,35 @@
 import { useEffect, useRef, useState } from "react";
 
 // Orders Shor plug has delivered (photos and short videos used with permission).
-// Exactly two show at a time, and the strip moves along by one every few seconds
+// Exactly two show at a time, and the strip moves along by one every 7 seconds
 // (it pauses while touched; swipe to move it yourself). Tapping a card starts a request
 // for something similar.
 //
-// To add or change a delivery: put the photo (or a short .mp4 plus a .jpg cover)
-// in chat/public/delivered/ and add a line below.
-type Delivery = {
+// The cards, their order and captions are managed on the team dashboard (/team/strip).
+// The list below is only a backup, used if the dashboard list can't be loaded.
+export type Delivery = {
   item: string; // what was delivered
   area: string; // where to
   when: string; // when, in past tense
   image: string; // photo, or the cover picture of a video
-  video?: string; // short silent clip (optional)
+  video?: string | null; // short silent clip (optional)
   ask: string; // what a tap types into the chat
 };
 
-const DELIVERIES: Delivery[] = [
-  { item: "Human hair bundle", area: "Marian", when: "earlier this morning", image: "/delivered/hair.jpg", ask: "I need human hair delivered, please" },
-  { item: "Suya, hot off the grill", area: "Atimbo", when: "yesterday night", image: "/delivered/suya-day.jpg", video: "/delivered/suya-day.mp4", ask: "I want suya delivered, please" },
+const BACKUP: Delivery[] = [
+  { item: "Suya & sausage", area: "State Housing", when: "last night", image: "/delivered/suya-night.jpg", video: "/delivered/suya-night.mp4", ask: "I want suya delivered tonight, please" },
   { item: "Fresh yoghurt", area: "Parliamentary", when: "earlier this morning", image: "/delivered/yoghurt.jpg", ask: "I need fresh yoghurt delivered, please" },
   { item: "Crates of eggs", area: "Atekong", when: "yesterday", image: "/delivered/eggs.jpg", ask: "I need crates of eggs delivered, please" },
   { item: "Perfumes & body splash", area: "Satellite Town", when: "yesterday evening", image: "/delivered/perfume-bag.jpg", ask: "I need perfume delivered, please" },
-  { item: "Suya & sausage", area: "State Housing", when: "last night", image: "/delivered/suya-night.jpg", video: "/delivered/suya-night.mp4", ask: "I want suya delivered tonight, please" },
+  { item: "Human hair bundle", area: "Marian", when: "earlier this morning", image: "/delivered/hair.jpg", ask: "I need human hair delivered, please" },
+  { item: "Suya, hot off the grill", area: "Atimbo", when: "yesterday night", image: "/delivered/suya-day.jpg", video: "/delivered/suya-day.mp4", ask: "I want suya delivered, please" },
 ];
-const N = DELIVERIES.length;
-const LOOP = [...DELIVERIES, ...DELIVERIES.slice(0, 2)]; // the first two again at the end, for a seamless loop
+const SECONDS_PER_MOVE = 7;
 
-export default function DeliveredCarousel({ onAsk }: { onAsk: (text: string) => void }) {
+export default function DeliveredCarousel({ items, onAsk }: { items?: Delivery[]; onAsk: (text: string) => void }) {
+  const DELIVERIES = items && items.length >= 2 ? items : BACKUP;
+  const N = DELIVERIES.length;
+  const LOOP = [...DELIVERIES, ...DELIVERIES.slice(0, 2)]; // the first two again at the end, for a seamless loop
   const [index, setIndex] = useState(0);
   const [animate, setAnimate] = useState(true);
   const [paused, setPaused] = useState(false);
@@ -42,13 +44,13 @@ export default function DeliveredCarousel({ onAsk }: { onAsk: (text: string) => 
     } catch {}
   }, []);
 
-  // Move along by one every 3.5 seconds.
+  // Move along by one every 7 seconds.
   useEffect(() => {
     if (paused || still) return;
     const t = setInterval(() => {
       setAnimate(true);
       setIndex((i) => i + 1);
-    }, 3500);
+    }, SECONDS_PER_MOVE * 1000);
     return () => clearInterval(t);
   }, [paused, still]);
 
@@ -83,10 +85,8 @@ export default function DeliveredCarousel({ onAsk }: { onAsk: (text: string) => 
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <p className="mb-2 flex items-center gap-1.5 px-1 text-xs font-semibold text-mute">
-        <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--ok)]" />
-        Recently delivered by our plugs
-      </p>
+      {/* Space kept free above the strip (for ads later). */}
+      <div className="h-6" aria-hidden="true" />
       <div className="overflow-hidden" aria-roledescription="carousel" aria-label="Recent deliveries">
         <div
           className="flex"
@@ -121,9 +121,6 @@ export default function DeliveredCarousel({ onAsk }: { onAsk: (text: string) => 
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={d.image} alt="" loading={i < 2 ? "eager" : "lazy"} draggable={false} className="h-full w-full object-cover" />
                   )}
-                  <span className="absolute left-2 top-2 rounded-full bg-[var(--ok)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                    ✓ Delivered
-                  </span>
                 </div>
                 <div className="px-3 py-2.5">
                   <p className="truncate text-[13px] font-bold">{d.item}</p>
