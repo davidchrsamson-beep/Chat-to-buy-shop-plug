@@ -19,7 +19,7 @@ export type Quote = {
 export type PlugMessage = {
   id: number;
   sender: "customer" | "team";
-  kind: "text" | "quote" | "paid" | "status";
+  kind: "text" | "quote" | "paid" | "status" | "ask_details";
   body: string;
   data: Quote | null;
   at: string;
@@ -119,12 +119,19 @@ export async function pollRequest(id: string, token: string, after: number): Pro
   return (data ?? null) as RequestState | null;
 }
 
-export async function markPaid(id: string, token: string): Promise<Ok<object> | Fail> {
+// "I've paid" with a photo or screenshot of the transfer receipt (shrunk on the phone first).
+export async function markPaid(id: string, token: string, receipt: string): Promise<Ok<object> | Fail> {
   if (!validId(id) || !validToken(token)) return { ok: false, error: "Please refresh the page and try again." };
-  const { error } = await db().rpc("shor_mark_paid", { p_request: id, p_token: token });
+  if (typeof receipt !== "string" || !receipt.startsWith("data:image/jpeg;base64,") || receipt.length > 900_000) {
+    return { ok: false, error: "Please add a clear photo or screenshot of your receipt." };
+  }
+  const { error } = await db().rpc("shor_mark_paid", { p_request: id, p_token: token, p_receipt: receipt });
   if (error) {
     console.error("Mark paid failed:", error.code, error.message);
-    return { ok: false, error: "That didn't go through. Please try again." };
+    return {
+      ok: false,
+      error: error.message.includes("too many") ? "You've sent several receipts already. Message your plug instead." : "Your receipt didn't send. Please try again.",
+    };
   }
   return { ok: true };
 }

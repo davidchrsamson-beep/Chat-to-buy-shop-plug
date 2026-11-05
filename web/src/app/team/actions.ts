@@ -29,8 +29,9 @@ export type InboxRequest = {
 export type InboxMessage = {
   id: number;
   sender: "customer" | "team";
-  kind: "text" | "quote" | "paid" | "status";
+  kind: "text" | "quote" | "paid" | "status" | "ask_details";
   body: string;
+  data: { receipt_id?: number } | null;
   created_at: string;
 };
 
@@ -58,7 +59,7 @@ export async function getConversation(id: string, after = 0): Promise<{ request:
     supabase.from("shor_requests").select(REQUEST_FIELDS).eq("id", id).maybeSingle(),
     supabase
       .from("shor_messages")
-      .select("id, sender, kind, body, created_at")
+      .select("id, sender, kind, body, data, created_at")
       .eq("request_id", id)
       .gt("id", Number.isInteger(after) ? after : 0)
       .order("id")
@@ -120,6 +121,27 @@ export async function setStatus(id: string, status: "paid" | "on_the_way" | "del
   const { error } = await supabase.rpc("shor_team_status", { p_request: id, p_status: status });
   if (error) {
     console.error("Status change failed:", error.code, error.message);
+    return { ok: false, error: "That didn't go through. Please try again." };
+  }
+  return { ok: true };
+}
+
+// The customer's payment receipt picture (team only).
+export async function getReceipt(receiptId: number): Promise<string | null> {
+  if (!Number.isInteger(receiptId) || receiptId <= 0) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("shor_receipts").select("image").eq("id", receiptId).maybeSingle();
+  if (error) console.error("Receipt load failed:", error.code, error.message);
+  return (data?.image as string | undefined) ?? null;
+}
+
+// Sends the customer a small form in their chat for name, phone and delivery address.
+export async function askDetails(id: string): Promise<Result> {
+  if (!isId(id)) return { ok: false, error: "Request not found." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("shor_team_ask_details", { p_request: id });
+  if (error) {
+    console.error("Ask details failed:", error.code, error.message);
     return { ok: false, error: "That didn't go through. Please try again." };
   }
   return { ok: true };

@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import {
+  askDetails,
   getConversation,
+  getReceipt,
   listRequests,
   markSeen,
   reply,
@@ -149,6 +151,7 @@ function Conversation({
   const [showBill, setShowBill] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [receipt, setReceipt] = useState<string | null>(null);
   const lastId = useRef(0);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -285,8 +288,27 @@ function Conversation({
                     mine ? "bg-brand text-white" : "bg-white shadow-sm"
                   } ${m.kind === "paid" ? "font-semibold ring-2 ring-purple-300" : ""}`}
                 >
-                  {m.kind === "quote" ? "🧾 Bill sent" : m.kind === "paid" ? "💸 Customer says: I've paid" : m.body}
+                  {m.kind === "quote"
+                    ? "🧾 Bill sent"
+                    : m.kind === "paid"
+                      ? "💸 Customer says: I've paid"
+                      : m.kind === "ask_details"
+                        ? "📋 Asked for delivery details"
+                        : m.body}
                 </p>
+                {m.kind === "paid" && m.data?.receipt_id && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const img = await getReceipt(m.data?.receipt_id as number);
+                      if (img) setReceipt(img);
+                      else setError("Couldn't load that receipt. Please try again.");
+                    }}
+                    className="mt-1 block min-h-9 rounded-full bg-purple-600 px-3 text-sm font-semibold text-white"
+                  >
+                    🧾 View receipt
+                  </button>
+                )}
                 <p className="mt-0.5 text-[11px] text-gray-400">{time(m.created_at)}</p>
               </div>
             );
@@ -295,10 +317,44 @@ function Conversation({
         </div>
       </div>
 
+      {receipt && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Payment receipt"
+          onClick={() => setReceipt(null)}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-black/85 p-4"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={receipt} alt="Customer's payment receipt" className="max-h-[85vh] max-w-full rounded-lg object-contain" />
+          <button type="button" onClick={() => setReceipt(null)} className="min-h-11 rounded-full bg-white px-5 font-semibold">
+            Close
+          </button>
+        </div>
+      )}
+
       {/* Actions for this request */}
       <div className="border-t border-gray-200 bg-white px-3 pt-3">
         {error && <p role="alert" className="mb-2 text-sm text-red-600">{error}</p>}
         <div className="mb-2 flex flex-wrap gap-2 text-sm">
+          {!req.phone && !["delivered", "cancelled"].includes(req.status) && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true);
+                setError(null);
+                const res = await askDetails(id);
+                if (!res.ok) setError(res.error);
+                await load();
+                onChanged();
+                setBusy(false);
+              }}
+              className="min-h-10 rounded-full border border-gray-300 px-3 font-semibold"
+            >
+              📋 Ask for delivery details
+            </button>
+          )}
           {!["delivered", "cancelled"].includes(req.status) && (
             <button type="button" onClick={() => setShowBill((s) => !s)} className="min-h-10 rounded-full border border-brand px-3 font-semibold text-brand">
               {showBill ? "Hide bill" : req.quote ? "Send a new bill" : "Send bill"}

@@ -13,7 +13,9 @@ import {
 } from "@/app/request-actions";
 import { CALABAR_AREAS } from "@/lib/areas";
 import { BRAND } from "@/lib/brand";
+import { EXPERIMENTS } from "@/lib/experiments";
 import { formatNaira } from "@/lib/format";
+import { shrinkPhoto } from "@/lib/photo";
 import PlugFace from "./PlugFace";
 import { ThemeToggle } from "./Theme";
 
@@ -141,13 +143,24 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
     setBusy(false);
   }
 
-  async function paid() {
-    if (!req || !token || busy) return;
+  // Sends the receipt photo. Receipts are shrunk on the phone so they upload fast but stay readable.
+  async function paid(file: File): Promise<boolean> {
+    if (!req || !token || busy) return false;
     setBusy(true);
-    const res = await markPaid(req.id, token);
-    if (!res.ok) setError(res.error);
+    setError(null);
+    let ok = false;
+    try {
+      let image = await shrinkPhoto(file, 1400);
+      if (image.length > 700_000) image = await shrinkPhoto(file, 1000); // keeps uploads well under the 1 MB limit
+      const res = await markPaid(req.id, token, image);
+      if (res.ok) ok = true;
+      else setError(res.error);
+    } catch {
+      setError("We couldn't open that picture. Try a screenshot or another photo.");
+    }
     await refresh();
     setBusy(false);
+    return ok;
   }
 
   function startOver() {
@@ -205,10 +218,23 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
                   quote={m.data}
                   code={req?.code ?? ""}
                   bank={state?.bank ?? null}
-                  canPay={state?.status === "quoted" && m.data.sent_at === state?.quote?.sent_at}
+                  canPay={(state?.status === "quoted" || state?.status === "payment_claimed") && m.data.sent_at === state?.quote?.sent_at}
+                  resend={state?.status === "payment_claimed"}
                   onPaid={paid}
                   busy={busy}
                 />
+              );
+            }
+            if (m.kind === "ask_details") {
+              // The team asked for delivery details: show the form (once), or a thank-you once sent.
+              const latestAsk = [...messages].reverse().find((x) => x.kind === "ask_details")?.id === m.id;
+              if (state && !state.has_details && latestAsk && req && token) {
+                return <DetailsCard key={m.id} requestId={req.id} token={token} onSaved={refresh} />;
+              }
+              return (
+                <p key={m.id} className="mx-auto rounded-full bg-panel px-3.5 py-1.5 text-center text-xs font-medium">
+                  {state?.has_details ? "Delivery details sent ✓" : m.body}
+                </p>
               );
             }
             if (m.kind === "status") {
@@ -224,7 +250,7 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
                   key={m.id}
                   className="ml-auto max-w-[80%] whitespace-pre-wrap break-words rounded-[20px] rounded-br-md bg-accent px-4 py-2.5 text-[15px] leading-snug text-night"
                 >
-                  {m.kind === "paid" ? "I've paid ✓" : m.body}
+                  {m.kind === "paid" ? "I've paid · receipt sent 🧾" : m.body}
                 </p>
               );
             }
@@ -232,10 +258,10 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
           })}
 
           {/* After the first message: where to deliver and how the plug can call */}
-          {customerSpoke && state && !state.has_details && req && token && (
+          {EXPERIMENTS.autoAssist && customerSpoke && state && !state.has_details && req && token && !messages.some((x) => x.kind === "ask_details") && (
             <DetailsCard requestId={req.id} token={token} onSaved={refresh} />
           )}
-          {customerSpoke && state?.has_details && !teamSpoke && (
+          {EXPERIMENTS.autoAssist && customerSpoke && state?.has_details && !teamSpoke && (
             <PlugBubble>
               Got it! Your request is in. Your bill will come right here, usually within a few minutes. Your plug will call you on{" "}
               {state.phone}.
@@ -243,19 +269,19 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
           )}
 
           {state?.status === "payment_claimed" && (
-            <PlugBubble>
-              Thanks! We&apos;re confirming your payment now.
+            <p className="mx-auto max-w-[90%] rounded-2xl bg-panel px-3.5 py-2 text-center text-xs font-medium">
+              Receipt received · we&apos;re confirming your payment.
               {helpLink && (
                 <>
                   {" "}
-                  To speed it up, you can{" "}
+                  Questions?{" "}
                   <a href={helpLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-accent underline">
-                    send your transfer receipt on WhatsApp
+                    WhatsApp us
                   </a>
                   .
                 </>
               )}
-            </PlugBubble>
+            </p>
           )}
 
           {finished && (
@@ -394,6 +420,7 @@ function QuoteCard({
   code,
   bank,
   canPay,
+  resend,
   onPaid,
   busy,
 }: {
@@ -401,9 +428,17 @@ function QuoteCard({
   code: string;
   bank: RequestState["bank"];
   canPay: boolean;
-  onPaid: () => void;
+  resend: boolean;
+  onPaid: (file: File) => Promise<boolean>;
   busy: boolean;
 }) {
+  const [receipt, setReceipt] = useState<{ file: File; preview: string } | null>(null);
+  const pickRef = useRef<HTMLInputElement>(null);
+  const pick = (file?: File) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    if (receipt) URL.revokeObjectURL(receipt.preview);
+    setReceipt({ file, preview: URL.createObjectURL(file) });
+  };
   const [copied, setCopied] = useState<string | null>(null);
   const copy = async (label: string, text: string) => {
     try {
@@ -465,14 +500,48 @@ function QuoteCard({
         )}
 
         {canPay && (
-          <div className="border-t border-line p-4">
+          <div className="space-y-2.5 border-t border-line p-4">
+            <p className="text-sm font-semibold">{resend ? "Need to send another receipt?" : "Paid? Send your receipt"}</p>
+            <input
+              ref={pickRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                pick(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+            {receipt ? (
+              <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={receipt.preview} alt="Your receipt" className="h-20 w-16 rounded-lg object-cover" />
+                <button type="button" onClick={() => pickRef.current?.click()} className="text-sm font-semibold text-accent">
+                  Change picture
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => pickRef.current?.click()}
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-dashed border-line-strong text-sm font-semibold"
+              >
+                🧾 Add a screenshot or photo of your receipt
+              </button>
+            )}
             <button
               type="button"
-              onClick={onPaid}
-              disabled={busy}
-              className="min-h-12 w-full rounded-full bg-accent font-bold text-night disabled:opacity-60"
+              disabled={busy || !receipt}
+              onClick={async () => {
+                if (!receipt) return;
+                if (await onPaid(receipt.file)) {
+                  URL.revokeObjectURL(receipt.preview);
+                  setReceipt(null);
+                }
+              }}
+              className="min-h-12 w-full rounded-full bg-accent font-bold text-night disabled:opacity-50"
             >
-              I&apos;ve paid
+              {busy ? "Sending…" : "I've paid · send receipt"}
             </button>
           </div>
         )}

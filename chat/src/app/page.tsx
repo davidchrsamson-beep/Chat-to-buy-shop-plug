@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: BRAND,
     description: TAGLINE,
-    images: ["/examples/baileys.jpg"],
+    images: ["/delivered/hair.jpg"],
   },
 };
 

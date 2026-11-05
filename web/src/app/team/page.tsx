@@ -13,12 +13,26 @@ export default async function TeamPage() {
   const { data: auth } = await supabase.auth.getClaims();
   if (!auth?.claims) redirect("/vendor/login");
 
-  const { data: isTeam } = await supabase.rpc("is_team");
+  const { data: isTeam, error: teamError } = await supabase.rpc("is_team");
+  if (teamError) {
+    console.error("Team check failed:", teamError.code, teamError.message);
+    return (
+      <main className="mx-auto max-w-md px-5 py-20 text-center">
+        <h1 className="text-xl font-bold">The Shor plug inbox isn&apos;t set up yet</h1>
+        <p className="mt-2 text-sm text-gray-600">
+          Run the Shor plug SQL file in Supabase (20261105090000_shor_plug_requests.sql), then refresh this page.
+        </p>
+      </main>
+    );
+  }
   if (!isTeam) {
     return (
       <main className="mx-auto max-w-md px-5 py-20 text-center">
         <h1 className="text-xl font-bold">This page is for the Shor plug team</h1>
-        <p className="mt-2 text-sm text-gray-600">Your account isn&apos;t on the team list yet.</p>
+        <p className="mt-2 text-sm text-gray-600">
+          Your account isn&apos;t on the team list yet. Add it in Supabase (SQL Editor) with the team_members command from the guide,
+          then refresh this page.
+        </p>
         <Link href="/vendor/dashboard" className="mt-6 inline-block font-semibold text-brand">Go to my dashboard</Link>
       </main>
     );

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { BRAND } from "@/lib/brand";
 import { isChristmasEdition } from "@/lib/season";
-import ExampleCarousel from "./ExampleCarousel";
+import DeliveredCarousel from "./DeliveredCarousel";
 import { ChristmasBadge, FestiveBackdrop } from "./Festive";
 import PlugFace from "./PlugFace";
 import RequestChat, { savedRequestCode } from "./RequestChat";
@@ -71,7 +71,7 @@ export default function ChatApp() {
               <p className="mt-3 text-base leading-relaxed text-mute">Plugs are always active.</p>
             </div>
 
-            <ExampleCarousel onAsk={(text) => openChat(text)} />
+            <DeliveredCarousel onAsk={(text) => openChat(text)} />
           </main>
 
           <button
