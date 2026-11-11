@@ -1,5 +1,7 @@
 "use server";
 
+import { createHash } from "node:crypto";
+import { headers } from "next/headers";
 import { db } from "@/lib/supabase";
 
 // Shop Plug requests: the customer's side of the chat with the team.
@@ -23,6 +25,7 @@ export type PlugMessage = {
   body: string;
   data: Quote | null;
   at: string;
+  deleted?: boolean;
 };
 
 export type RequestState = {
@@ -32,6 +35,7 @@ export type RequestState = {
   phone: string | null;
   quote: Quote | null;
   bank: { bank: string; account_name: string; account_number: string } | null;
+  deleted?: number[]; // ids of messages the customer deleted
   messages: PlugMessage[];
 };
 
@@ -41,8 +45,24 @@ type Fail = { ok: false; error: string };
 const validToken = (t: unknown): t is string => typeof t === "string" && /^[a-f0-9]{64}$/.test(t);
 const validId = (id: unknown): id is string => typeof id === "string" && /^[0-9a-f-]{36}$/.test(id);
 
+// Per-visitor flood limits. Visitors are counted by a one-way scrambled code of their
+// internet address, never the address itself.
+async function allowed(bucket: "start" | "send"): Promise<boolean> {
+  const h = await headers();
+  const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "local";
+  const keyHash = createHash("sha256").update(`shop-plug:${ip}`).digest("hex");
+  const { data, error } = await db().rpc("shor_rate_ok", { p_bucket: bucket, p_key_hash: keyHash });
+  if (error) {
+    // If the limit check itself fails, let the customer through (the overall cap still protects us).
+    console.error("Rate check failed:", error.code, error.message);
+    return true;
+  }
+  return data === true;
+}
+
 export async function startRequest(token: string): Promise<Ok<{ id: string; code: string }> | Fail> {
   if (!validToken(token)) return { ok: false, error: "Please refresh the page and try again." };
+  if (!(await allowed("start"))) return { ok: false, error: "You've started several requests just now. Please wait a few minutes." };
   const { data, error } = await db().rpc("shor_start", { p_token: token });
   if (error) {
     console.error("Request start failed:", error.code, error.message);
@@ -57,6 +77,7 @@ export async function startRequest(token: string): Promise<Ok<{ id: string; code
 export async function sendMessage(id: string, token: string, body: string): Promise<Ok<object> | Fail> {
   const text = String(body ?? "").trim().slice(0, 2000);
   if (!validId(id) || !validToken(token) || !text) return { ok: false, error: "Message not sent. Please try again." };
+  if (!(await allowed("send"))) return { ok: false, error: "You're sending messages very fast. Give it a moment." };
   const { error } = await db().rpc("shor_send", { p_request: id, p_token: token, p_body: text });
   if (error) {
     console.error("Message send failed:", error.code, error.message);
@@ -132,6 +153,19 @@ export async function markPaid(id: string, token: string, receipt: string): Prom
       ok: false,
       error: error.message.includes("too many") ? "You've sent several receipts already. Message your plug instead." : "Your receipt didn't send. Please try again.",
     };
+  }
+  return { ok: true };
+}
+
+// The customer deletes one of their own messages: the words are wiped from our records.
+export async function deleteMessage(id: string, token: string, messageId: number): Promise<Ok<object> | Fail> {
+  if (!validId(id) || !validToken(token) || !Number.isInteger(messageId) || messageId <= 0) {
+    return { ok: false, error: "Please refresh the page and try again." };
+  }
+  const { error } = await db().rpc("shor_delete_message", { p_request: id, p_token: token, p_message: messageId });
+  if (error) {
+    console.error("Delete message failed:", error.code, error.message);
+    return { ok: false, error: "That message wasn't deleted. Please try again." };
   }
   return { ok: true };
 }

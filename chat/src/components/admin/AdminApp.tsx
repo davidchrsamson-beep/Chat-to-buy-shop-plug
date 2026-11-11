@@ -32,6 +32,7 @@ type Msg = {
   kind: "text" | "quote" | "paid" | "status" | "ask_details";
   body: string;
   data: { receipt_id?: number } | null;
+  deleted_at: string | null;
   created_at: string;
 };
 type Pricing = { faresKobo: number[]; lateKobo: number; bulkyKobo: number; commissionKobo: number };
@@ -403,15 +404,28 @@ function Conversation({ id, pricing, onBack, onChanged }: { id: string; pricing:
   }, [id, onChanged]);
 
   const load = useCallback(async () => {
-    const [{ data: r }, { data: m }] = await Promise.all([
+    const [{ data: r }, { data: m }, { data: d }] = await Promise.all([
       adminDb().from("shor_requests").select(FIELDS).eq("id", id).maybeSingle(),
-      adminDb().from("shor_messages").select("id, sender, kind, body, data, created_at").eq("request_id", id).gt("id", lastId.current).order("id").limit(500),
+      adminDb()
+        .from("shor_messages")
+        .select("id, sender, kind, body, data, deleted_at, created_at")
+        .eq("request_id", id)
+        .gt("id", lastId.current)
+        .order("id")
+        .limit(500),
+      // Messages the customer has deleted since (their words are already wiped).
+      adminDb().from("shor_messages").select("id").eq("request_id", id).not("deleted_at", "is", null),
     ]);
     if (r) setReq(r as Req);
     const fresh = (m ?? []) as Msg[];
+    const gone = new Set(((d ?? []) as { id: number }[]).map((x) => x.id));
+    setMessages((old) =>
+      [...old, ...fresh.filter((x) => !old.some((y) => y.id === x.id))].map((x) =>
+        gone.has(x.id) ? { ...x, body: "", deleted_at: x.deleted_at ?? "deleted" } : x,
+      ),
+    );
     if (fresh.length) {
       lastId.current = fresh[fresh.length - 1].id;
-      setMessages((old) => [...old, ...fresh.filter((x) => !old.some((y) => y.id === x.id))]);
       if (fresh.some((x) => x.sender === "customer")) await seen();
     }
   }, [id, seen]);
@@ -529,6 +543,13 @@ function Conversation({ id, pricing, onBack, onChanged }: { id: string; pricing:
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <div className="mx-auto flex max-w-2xl flex-col gap-2.5">
           {messages.map((m) => {
+            if (m.deleted_at) {
+              return (
+                <p key={m.id} className="max-w-[80%] rounded-2xl border border-line px-3.5 py-2 text-sm italic text-mute">
+                  🗑 Customer deleted a message
+                </p>
+              );
+            }
             if (m.kind === "status") {
               return (
                 <p key={m.id} className="mx-auto rounded-full bg-panel px-3 py-1 text-xs">

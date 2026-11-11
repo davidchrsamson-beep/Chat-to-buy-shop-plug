@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
+  deleteMessage,
   markPaid,
   pollRequest,
   saveDetails,
@@ -15,6 +16,7 @@ import { CALABAR_AREAS } from "@/lib/areas";
 import { BRAND } from "@/lib/brand";
 import { EXPERIMENTS } from "@/lib/experiments";
 import { formatNaira } from "@/lib/format";
+import { lagosNow } from "@/lib/hours";
 import { shrinkPhoto } from "@/lib/photo";
 import PlugFace from "./PlugFace";
 import { ThemeToggle } from "./Theme";
@@ -68,6 +70,15 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
   const [error, setError] = useState<string | null>(null);
   const lastId = useRef(0);
   const endRef = useRef<HTMLDivElement>(null);
+  const [pickedId, setPickedId] = useState<number | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [greeting, setGreeting] = useState("Hello");
+
+  // "Good morning / afternoon / evening", by the time in Calabar.
+  useEffect(() => {
+    const h = lagosNow().minute / 60;
+    setGreeting(h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : "Good evening");
+  }, []);
 
   // Load (or create) this phone's secret code, and resume an open request.
   useEffect(() => {
@@ -89,10 +100,12 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
     if (!res) return;
     const { messages: fresh, ...rest } = res;
     setState(rest);
-    if (fresh.length) {
-      lastId.current = fresh[fresh.length - 1].id;
-      setMessages((m) => [...m, ...fresh.filter((f) => !m.some((x) => x.id === f.id))]);
-    }
+    const gone = new Set(rest.deleted ?? []);
+    setMessages((m) => {
+      const merged = [...m, ...fresh.filter((f) => !m.some((x) => x.id === f.id))];
+      return merged.map((x) => (gone.has(x.id) ? { ...x, body: "", deleted: true } : x));
+    });
+    if (fresh.length) lastId.current = fresh[fresh.length - 1].id;
   }, [req, token]);
 
   // Check for replies every few seconds while the chat is open and on screen.
@@ -144,6 +157,19 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
   }
 
   // Sends the receipt photo. Receipts are shrunk on the phone so they upload fast but stay readable.
+  // Deletes one of the customer's own messages (the words are wiped from our records).
+  async function remove(messageId: number) {
+    if (!req || !token) return;
+    setBusy(true);
+    const res = await deleteMessage(req.id, token, messageId);
+    if (res.ok) {
+      setMessages((ms) => ms.map((x) => (x.id === messageId ? { ...x, body: "", deleted: true } : x)));
+      setPickedId(null);
+      setConfirmDelete(false);
+    } else setError(res.error);
+    setBusy(false);
+  }
+
   async function paid(file: File): Promise<boolean> {
     if (!req || !token || busy) return false;
     setBusy(true);
@@ -204,11 +230,8 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
 
       <main className="flex-1 overflow-y-auto px-3 py-4" aria-live="polite">
         <div className="flex flex-col gap-3">
-          {/* Automatic welcome */}
-          <PlugBubble>Hey 👋 What&apos;s up?</PlugBubble>
-          <PlugBubble>
-            What do you need today? Tell me what to get, where you are, and when you need it. Day or late night, a plug is on it.
-          </PlugBubble>
+          {/* The only automatic message: a greeting for the time of day in Calabar */}
+          <PlugBubble>{greeting}, what can we help you get?</PlugBubble>
 
           {messages.map((m) => {
             if (m.kind === "quote" && m.data) {
@@ -245,13 +268,41 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
               );
             }
             if (m.sender === "customer") {
+              if (m.deleted) {
+                return (
+                  <p key={m.id} className="ml-auto max-w-[80%] rounded-[20px] rounded-br-md border border-line px-4 py-2.5 text-sm italic text-mute">
+                    You deleted this message
+                  </p>
+                );
+              }
+              const canDelete = m.kind === "text";
+              const picked = pickedId === m.id;
               return (
-                <p
-                  key={m.id}
-                  className="ml-auto max-w-[80%] whitespace-pre-wrap break-words rounded-[20px] rounded-br-md bg-accent px-4 py-2.5 text-[15px] leading-snug text-night"
-                >
-                  {m.kind === "paid" ? "I've paid · receipt sent 🧾" : m.body}
-                </p>
+                <div key={m.id} className="ml-auto flex max-w-[80%] flex-col items-end gap-1">
+                  <button
+                    type="button"
+                    disabled={!canDelete}
+                    onClick={() => {
+                      setPickedId(picked ? null : m.id);
+                      setConfirmDelete(false);
+                    }}
+                    aria-expanded={canDelete ? picked : undefined}
+                    aria-label={canDelete ? "Message options" : undefined}
+                    className="whitespace-pre-wrap break-words rounded-[20px] rounded-br-md bg-accent px-4 py-2.5 text-left text-[15px] leading-snug text-night disabled:cursor-default"
+                  >
+                    {m.kind === "paid" ? "I've paid · receipt sent 🧾" : m.body}
+                  </button>
+                  {picked && canDelete && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => (confirmDelete ? void remove(m.id) : setConfirmDelete(true))}
+                      className={`min-h-9 rounded-full px-3 text-xs font-semibold ${confirmDelete ? "bg-red-600 text-white" : "border border-line text-red-600"}`}
+                    >
+                      {confirmDelete ? "Tap again to delete" : "Delete message"}
+                    </button>
+                  )}
+                </div>
               );
             }
             return <PlugBubble key={m.id}>{m.body}</PlugBubble>;
