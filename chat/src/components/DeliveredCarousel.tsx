@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Orders Shor plug has delivered (photos and short videos used with permission).
-// Exactly two show at a time, and the strip moves along by one every 7 seconds
+// Orders Shop Plug has delivered (photos and short videos used with permission).
+// Exactly two show at a time, and the strip moves along by one every 8 seconds
 // (it pauses while touched; swipe to move it yourself). Tapping a card starts a request
 // for something similar.
 //
@@ -12,21 +12,21 @@ import { useEffect, useRef, useState } from "react";
 export type Delivery = {
   item: string; // what was delivered
   area: string; // where to
-  when: string; // when, in past tense
+  when: string; // when: "Today", "Last night", "Yesterday"…
   image: string; // photo, or the cover picture of a video
   video?: string | null; // short silent clip (optional)
   ask: string; // what a tap types into the chat
 };
 
 const BACKUP: Delivery[] = [
-  { item: "Suya & sausage", area: "State Housing", when: "last night", image: "/delivered/suya-night.jpg", video: "/delivered/suya-night.mp4", ask: "I want suya delivered tonight, please" },
-  { item: "Fresh yoghurt", area: "Parliamentary", when: "earlier this morning", image: "/delivered/yoghurt.jpg", ask: "I need fresh yoghurt delivered, please" },
-  { item: "Crates of eggs", area: "Atekong", when: "yesterday", image: "/delivered/eggs.jpg", ask: "I need crates of eggs delivered, please" },
-  { item: "Perfumes & body splash", area: "Satellite Town", when: "yesterday evening", image: "/delivered/perfume-bag.jpg", ask: "I need perfume delivered, please" },
-  { item: "Human hair bundle", area: "Marian", when: "earlier this morning", image: "/delivered/hair.jpg", ask: "I need human hair delivered, please" },
-  { item: "Suya, hot off the grill", area: "Atimbo", when: "yesterday night", image: "/delivered/suya-day.jpg", video: "/delivered/suya-day.mp4", ask: "I want suya delivered, please" },
+  { item: "5k suya", area: "State Housing", when: "Last night", image: "/delivered/suya-night.jpg", video: "/delivered/suya-night.mp4", ask: "I want suya delivered tonight, please" },
+  { item: "Fresh yoghurt", area: "Parliamentary", when: "Today", image: "/delivered/yoghurt.jpg", ask: "I need fresh yoghurt delivered, please" },
+  { item: "Crates of eggs", area: "Atekong", when: "Today", image: "/delivered/eggs.jpg", ask: "I need crates of eggs delivered, please" },
+  { item: "Perfumes and body splash", area: "Satellite Town", when: "Yesterday", image: "/delivered/perfume-bag.jpg", ask: "I need perfume delivered, please" },
+  { item: "Human hair bundle", area: "Marian", when: "Today", image: "/delivered/hair.jpg", ask: "I need human hair delivered, please" },
+  { item: "Suya", area: "Atimbo", when: "Yesterday", image: "/delivered/suya-day.jpg", video: "/delivered/suya-day.mp4", ask: "I want suya delivered, please" },
 ];
-const SECONDS_PER_MOVE = 7;
+const SECONDS_PER_MOVE = 8;
 
 export default function DeliveredCarousel({ items, onAsk }: { items?: Delivery[]; onAsk: (text: string) => void }) {
   const DELIVERIES = items && items.length >= 2 ? items : BACKUP;
@@ -44,7 +44,7 @@ export default function DeliveredCarousel({ items, onAsk }: { items?: Delivery[]
     } catch {}
   }, []);
 
-  // Move along by one every 7 seconds.
+  // Move along by one every 8 seconds.
   useEffect(() => {
     if (paused || still) return;
     const t = setInterval(() => {
@@ -122,12 +122,12 @@ export default function DeliveredCarousel({ items, onAsk }: { items?: Delivery[]
                     <img src={d.image} alt="" loading={i < 2 ? "eager" : "lazy"} draggable={false} className="h-full w-full object-cover" />
                   )}
                 </div>
-                <div className="px-3 py-2.5">
-                  <p className="truncate text-[13px] font-bold">{d.item}</p>
-                  <p className="truncate text-xs">
-                    <span className="text-mute">Delivered to</span> <span className="font-semibold">{d.area}</span>
+                {/* Caption: WHEN, then WHAT delivered to WHERE */}
+                <div className="min-h-[5.2em] px-3 py-2.5">
+                  {d.when && <p className="text-[11px] font-semibold text-mute">{d.when} •</p>}
+                  <p className="line-clamp-2 text-[13px] leading-snug">
+                    {d.item} delivered to <strong>{d.area}</strong>
                   </p>
-                  <p className="truncate text-xs text-mute">{d.when}</p>
                 </div>
               </button>
             </div>

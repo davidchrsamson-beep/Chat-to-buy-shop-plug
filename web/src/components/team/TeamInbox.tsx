@@ -64,7 +64,7 @@ export default function TeamInbox({ pricing }: { pricing: Pricing }) {
     const unread = rows.filter(isUnread).length;
     if (unread > unreadBefore.current) ding();
     unreadBefore.current = unread;
-    document.title = unread ? `(${unread}) Shor plug inbox` : "Shor plug inbox";
+    document.title = unread ? `(${unread}) Shop Plug inbox` : "Shop Plug inbox";
   }, []);
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export default function TeamInbox({ pricing }: { pricing: Pricing }) {
       <aside className={`w-full shrink-0 flex-col border-r border-gray-200 bg-white md:flex md:w-80 ${openId ? "hidden" : "flex"}`}>
         <div className="border-b border-gray-100 p-4">
           <div className="flex items-center justify-between gap-2">
-            <h1 className="text-lg font-bold">Shor plug inbox</h1>
+            <h1 className="text-lg font-bold">Shop Plug inbox</h1>
             <Link href="/team/strip" className="text-sm font-semibold text-brand">Photo strip →</Link>
           </div>
           <div className="mt-2 flex gap-2 text-sm">
@@ -213,7 +213,7 @@ function Conversation({
 
   const waNumber = req.phone ? `234${req.phone.replace(/\D/g, "").replace(/^0/, "")}` : null;
   const forPlug = [
-    `Shor plug request ${req.code}`,
+    `Shop Plug request ${req.code}`,
     req.customer_name && `Customer: ${req.customer_name}`,
     req.phone && `Phone: ${req.phone}`,
     req.address && `Address: ${req.address}${req.area ? ` (${req.area})` : ""}`,
@@ -415,7 +415,7 @@ function Conversation({
             id="team-reply"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Reply as Shor plug…"
+            placeholder="Reply as Shop Plug…"
             maxLength={2000}
             className="min-h-12 flex-1 rounded-full border border-gray-200 px-4 text-base focus:border-brand focus:outline-none"
           />
@@ -516,7 +516,7 @@ function BillBuilder({
           Customer pays <strong className="text-base text-ink">{formatNaira(total)}</strong>
         </span>
         <span className="text-xs text-gray-500">
-          Plug gets {formatNaira(plugGets)} · Shor plug {formatNaira(pricing.commissionKobo)}
+          Plug gets {formatNaira(plugGets)} · Shop Plug {formatNaira(pricing.commissionKobo)}
         </span>
       </div>
 

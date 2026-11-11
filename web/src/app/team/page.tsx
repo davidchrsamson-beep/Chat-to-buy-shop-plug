@@ -4,10 +4,10 @@ import TeamGate from "@/components/team/TeamGate";
 import TeamInbox from "@/components/team/TeamInbox";
 import { teamAccess } from "@/lib/team";
 
-export const metadata: Metadata = { title: "Shor plug inbox", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Shop Plug inbox", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
-// The Shor plug team inbox: customers' requests, replies, bills and delivery status.
+// The Shop Plug team inbox: customers' requests, replies, bills and delivery status.
 export default async function TeamPage() {
   const { supabase, state, email } = await teamAccess();
   if (state === "login") redirect("/vendor/login");

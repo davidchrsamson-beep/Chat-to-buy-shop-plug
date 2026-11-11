@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { mediaBase, presignPut } from "@/lib/r2";
 import { teamAccess } from "@/lib/team";
 
-// The Shor plug home-screen photo strip. Only team members can change it:
+// The Shop Plug home-screen photo strip. Only team members can change it:
 // every action checks, and the database checks again.
 
 export type StripItem = {
@@ -104,7 +104,7 @@ export async function deleteStripItem(id: string): Promise<Result> {
   return error ? fail("delete", error) : { ok: true };
 }
 
-// A one-time link to upload one strip photo (valid 10 minutes), into Shor plug's own folder.
+// A one-time link to upload one strip photo (valid 10 minutes), into Shop Plug's own folder.
 export async function stripUploadTarget(): Promise<{ ok: true; uploadUrl: string; publicUrl: string } | { ok: false; error: string }> {
   if (!(await team())) return { ok: false, error: "Not allowed." };
   try {

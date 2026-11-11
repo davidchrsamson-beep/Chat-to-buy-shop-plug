@@ -41,8 +41,7 @@ insert into public.shor_strip (item, area, when_text, ask, image_url, video_url,
 select * from (values
   ('Suya & sausage', 'State Housing', 'last night', 'I want suya delivered tonight, please', '/delivered/suya-night.jpg', '/delivered/suya-night.mp4', 10),
   ('Fresh yoghurt', 'Parliamentary', 'earlier this morning', 'I need fresh yoghurt delivered, please', '/delivered/yoghurt.jpg', null, 20),
-  ('Crates of eggs', 'Ateko
-  ng', 'yesterday', 'I need crates of eggs delivered, please', '/delivered/eggs.jpg', null, 30),
+  ('Crates of eggs', 'Atekong', 'yesterday', 'I need crates of eggs delivered, please', '/delivered/eggs.jpg', null, 30),
   ('Perfumes & body splash', 'Satellite Town', 'yesterday evening', 'I need perfume delivered, please', '/delivered/perfume-bag.jpg', null, 40),
   ('Human hair bundle', 'Marian', 'earlier this morning', 'I need human hair delivered, please', '/delivered/hair.jpg', null, 50),
   ('Suya, hot off the grill', 'Atimbo', 'yesterday night', 'I want suya delivered, please', '/delivered/suya-day.jpg', '/delivered/suya-day.mp4', 60)

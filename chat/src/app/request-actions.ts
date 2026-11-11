@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/supabase";
 
-// Shor plug requests: the customer's side of the chat with the team.
+// Shop Plug requests: the customer's side of the chat with the team.
 // Every call carries the customer's secret code (kept only on their phone);
 // the database checks it before showing or changing anything.
 

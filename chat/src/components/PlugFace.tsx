@@ -1,36 +1,44 @@
-// The friendly face of Shor plug: a smiling runner in an orange cap.
-// An original drawing, so the chat feels like a person, not a logo.
+// The Shop Plug logo: "Plug Promise", two little fingers hooked together
+// (also two linked loops: a connection you can hold), on Shop Plug orange.
+// Used wherever the brand appears: the home header, the "Make a request" button,
+// the chat header and the small avatar next to the team's messages.
+// (The file keeps its old name, PlugFace, so every screen picks up the logo without other changes.)
+
+const ORANGE = "#FF7A1A";
+const INK = "#1C140F";
+
+export function LogoMark({ size = 40, shape = "square" }: { size?: number; shape?: "square" | "circle" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" role="img" aria-label="Shop Plug">
+      <rect width="200" height="200" rx={shape === "circle" ? 100 : 48} fill={ORANGE} />
+      <g transform="translate(22 22) scale(0.78)" fill="none" strokeLinecap="round">
+        {/* dark finger (back) */}
+        <circle cx="112" cy="100" r="24" stroke={ORANGE} strokeWidth="30" />
+        <path d="M129 83 C 140 68, 152 50, 164 34" stroke={ORANGE} strokeWidth="30" />
+        <circle cx="112" cy="100" r="24" stroke={INK} strokeWidth="20" />
+        <path d="M129 83 C 140 68, 152 50, 164 34" stroke={INK} strokeWidth="20" />
+        {/* light finger (front) */}
+        <circle cx="88" cy="100" r="24" stroke={ORANGE} strokeWidth="30" />
+        <path d="M71 117 C 60 132, 48 150, 36 166" stroke={ORANGE} strokeWidth="30" />
+        <circle cx="88" cy="100" r="24" stroke="#FFFFFF" strokeWidth="20" />
+        <path d="M71 117 C 60 132, 48 150, 36 166" stroke="#FFFFFF" strokeWidth="20" />
+        {/* where the dark finger passes over again: the two are locked together */}
+        <path d="M114 124 A24 24 0 0 1 90 110" stroke={ORANGE} strokeWidth="30" strokeLinecap="butt" />
+        <path d="M114 124 A24 24 0 0 1 90 110" stroke={INK} strokeWidth="20" strokeLinecap="butt" />
+      </g>
+    </svg>
+  );
+}
+
+// Same props as before, so existing screens keep working: size, and an optional green "online" dot.
 export default function PlugFace({ size = 40, online = false }: { size?: number; online?: boolean }) {
   return (
     <span className="relative inline-block shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="Your plug">
-        <circle cx="32" cy="32" r="32" fill="#FFE3CC" />
-        {/* neck and shirt */}
-        <path d="M14 64c2-10 9-15 18-15s16 5 18 15z" fill="#FF7A1A" />
-        <rect x="27.5" y="42" width="9" height="9" rx="3" fill="#7A4A2E" />
-        {/* head */}
-        <ellipse cx="32" cy="33" rx="14" ry="15" fill="#8A5636" />
-        {/* ears */}
-        <ellipse cx="18.3" cy="34" rx="2.6" ry="3.6" fill="#7A4A2E" />
-        <ellipse cx="45.7" cy="34" rx="2.6" ry="3.6" fill="#7A4A2E" />
-        {/* cap: crown, then brim */}
-        <path d="M17.5 27c0-9 6.5-14.5 14.5-14.5S46.5 18 46.5 27z" fill="#FF7A1A" />
-        <path d="M30 26.2h22c1.8 0 2.4 1.9 1 2.9-1.6 1.1-4.8 1.6-9 1.6H30z" fill="#E2620A" />
-        <circle cx="32" cy="12.8" r="1.6" fill="#E2620A" />
-        {/* eyes, eyebrows, cheeks, smile */}
-        <ellipse cx="26.5" cy="34" rx="2" ry="2.3" fill="#1C1209" />
-        <ellipse cx="37.5" cy="34" rx="2" ry="2.3" fill="#1C1209" />
-        <circle cx="27.2" cy="33.2" r=".6" fill="#fff" />
-        <circle cx="38.2" cy="33.2" r=".6" fill="#fff" />
-        <path d="M23.5 30.2q3-1.6 6 0M34.5 30.2q3-1.6 6 0" stroke="#1C1209" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-        <circle cx="23.5" cy="39" r="2.2" fill="#C2410C" opacity=".25" />
-        <circle cx="40.5" cy="39" r="2.2" fill="#C2410C" opacity=".25" />
-        <path d="M26.5 40.2q5.5 5.2 11 0" stroke="#1C1209" strokeWidth="1.6" fill="#fff" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      <LogoMark size={size} shape={size <= 32 ? "circle" : "square"} />
       {online && (
         <span
           aria-hidden="true"
-          className="absolute bottom-0 right-0 block rounded-full border-2 border-night bg-[var(--ok)]"
+          className="absolute -bottom-0.5 -right-0.5 block rounded-full border-2 border-night bg-[var(--ok)]"
           style={{ width: size * 0.28, height: size * 0.28 }}
         />
       )}

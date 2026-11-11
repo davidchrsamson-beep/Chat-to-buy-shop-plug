@@ -8,10 +8,11 @@ import { ChristmasBadge, FestiveBackdrop } from "./Festive";
 import PlugFace from "./PlugFace";
 import RequestChat, { savedRequestCode } from "./RequestChat";
 import { THEME_STYLES, ThemeToggle, useTheme } from "./Theme";
+import TypingDemo from "./TypingDemo";
 
 const CHRISTMAS = isChristmasEdition();
 
-// Shor plug: the home screen, and the request chat it opens.
+// Shop Plug: the home screen, and the request chat it opens.
 // (The earlier "errand" vendor search is kept in the code but no longer shown.)
 export default function ChatApp({ deliveries }: { deliveries?: Delivery[] }) {
   const { theme, toggle } = useTheme();
@@ -63,14 +64,21 @@ export default function ChatApp({ deliveries }: { deliveries?: Delivery[] }) {
             <ThemeToggle theme={theme} onToggle={toggle} />
           </header>
 
-          <main className="flex min-w-0 flex-1 flex-col justify-end gap-6 pb-5">
-            <div className="px-1">
-              <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight">
-                Order anything you want, day or <span className="text-accent">late night</span>.
-              </h1>
-              <p className="mt-3 text-base leading-relaxed text-mute">Plugs are always active.</p>
-            </div>
+          {/* Right under the logo: someone "typing" an order, then the offer */}
+          <section className="mt-3 min-w-0">
+            <h1 className="sr-only">Shop Plug: order anything you want, day or late night.</h1>
+            <p className="mb-2 flex items-center gap-1.5 px-1 text-xs font-medium text-mute">
+              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--ok)]" />
+              Plugs are always active
+            </p>
+            <TypingDemo onOpen={() => openChat()} />
+            <p className="mt-3 px-2 text-center text-sm leading-snug">
+              Pay the plug&apos;s transportation, from <strong className="text-accent">₦600</strong>. Get your requests delivered at your
+              convenience.
+            </p>
+          </section>
 
+          <main className="flex min-w-0 flex-1 flex-col justify-end pb-5 pt-4">
             <DeliveredCarousel items={deliveries} onAsk={(text) => openChat(text)} />
           </main>
 
@@ -79,8 +87,8 @@ export default function ChatApp({ deliveries }: { deliveries?: Delivery[] }) {
             onClick={() => openChat()}
             className="flex min-h-16 w-full items-center gap-3 rounded-full bg-accent py-2 pl-2 pr-6 text-left text-night shadow-lg shadow-accent/25 transition active:scale-[.99]"
           >
-            <span className="rounded-full bg-night/20 p-0.5">
-              <PlugFace size={44} />
+            <span className="rounded-[14px] ring-2 ring-white/70">
+              <PlugFace size={46} />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-lg font-bold leading-tight">{openCode ? "Continue your request" : "Make a request"}</span>
@@ -90,7 +98,6 @@ export default function ChatApp({ deliveries }: { deliveries?: Delivery[] }) {
             </span>
             <span aria-hidden="true" className="text-2xl font-bold">→</span>
           </button>
-          <p className="mt-3 text-center text-xs text-mute">Pay by bank transfer · Your plug calls you on delivery</p>
         </div>
       )}
     </>

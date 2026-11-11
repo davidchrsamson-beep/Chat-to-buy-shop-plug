@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 
-// Who may use the Shor plug team pages (inbox, photo strip).
+// Who may use the Shop Plug team pages (inbox, photo strip).
 //   "ok"        → a team member
 //   "login"     → not logged in
-//   "setup"     → the Shor plug SQL file hasn't been run in Supabase yet
+//   "setup"     → the Shop Plug SQL file hasn't been run in Supabase yet
 //   "not_team"  → logged in, but not on the team list
 export async function teamAccess() {
   const supabase = await createClient();

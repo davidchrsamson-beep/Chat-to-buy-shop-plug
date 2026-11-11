@@ -194,9 +194,9 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
         </button>
         <PlugFace size={40} online />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-bold leading-tight">Your plug</p>
+          <p className="truncate font-bold leading-tight">{BRAND}</p>
           <p className="truncate text-xs text-mute">
-            {req ? `Request ${req.code} · ` : ""}Replies in minutes, day or late night
+            Replies in minutes, day or late night
           </p>
         </div>
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
@@ -304,7 +304,7 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
       </main>
 
       {!finished && (
-        <form onSubmit={send} className="flex items-end gap-2 border-t border-line px-3 pb-5 pt-3">
+        <form onSubmit={send} className="flex items-end gap-2 border-t border-line px-3 pb-2 pt-3">
           <label htmlFor="request-input" className="sr-only">
             Message your plug
           </label>
@@ -333,14 +333,11 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
           </button>
         </form>
       )}
-      {helpLink && !finished && (
-        <p className="-mt-3 pb-3 text-center text-[11px] text-mute">
-          Need a human fast?{" "}
-          <a href={helpLink} target="_blank" rel="noopener noreferrer" className="underline">
-            WhatsApp us
-          </a>
-        </p>
-      )}
+      <p className="pb-3 text-center text-[11px] text-mute">
+        <a href="/privacy" className="hover:underline">Privacy</a>
+        <span aria-hidden="true" className="mx-1.5">•</span>
+        <a href="/terms" className="hover:underline">Terms &amp; Conditions</a>
+      </p>
     </div>
   );
 }

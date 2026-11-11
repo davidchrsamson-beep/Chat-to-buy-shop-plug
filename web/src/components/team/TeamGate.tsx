@@ -6,14 +6,14 @@ export default function TeamGate({ state, email }: { state: "setup" | "not_team"
     <main className="mx-auto max-w-lg px-5 py-16">
       {state === "setup" ? (
         <>
-          <h1 className="text-xl font-bold">The Shor plug team pages aren&apos;t set up yet</h1>
+          <h1 className="text-xl font-bold">The Shop Plug team pages aren&apos;t set up yet</h1>
           <p className="mt-2 text-sm text-gray-600">
-            In Supabase → SQL Editor, run the Shor plug SQL files (they start with <code>20261105</code>), then refresh this page.
+            In Supabase → SQL Editor, run the Shop Plug SQL files (they start with <code>20261105</code>), then refresh this page.
           </p>
         </>
       ) : (
         <>
-          <h1 className="text-xl font-bold">This page is for the Shor plug team</h1>
+          <h1 className="text-xl font-bold">This page is for the Shop Plug team</h1>
           <p className="mt-2 text-sm text-gray-600">
             You&apos;re logged in as <strong>{email ?? "this account"}</strong>, which isn&apos;t on the team list yet. In Supabase → SQL
             Editor, run this, then refresh this page:

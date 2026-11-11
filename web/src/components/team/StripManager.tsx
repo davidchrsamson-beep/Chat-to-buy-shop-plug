@@ -14,10 +14,10 @@ import {
 import { CALABAR_AREAS } from "@/lib/areas";
 import { compressImage } from "@/lib/images";
 
-const WHEN = ["earlier this morning", "this afternoon", "this evening", "last night", "yesterday", "yesterday night"];
+const WHEN = ["Today", "This morning", "This afternoon", "Tonight", "Last night", "Yesterday"];
 const input = "min-h-11 w-full rounded-xl border border-gray-200 px-3 text-base focus:border-brand focus:outline-none";
 
-// Arrange the "recently delivered" strip on the Shor plug home screen:
+// Arrange the "recently delivered" strip on the Shop Plug home screen:
 // order (↑ ↓), captions, show/hide, delete, and add new photos.
 export default function StripManager({ initial, shorUrl }: { initial: StripItem[]; shorUrl: string }) {
   const [items, setItems] = useState(initial);
@@ -53,7 +53,7 @@ export default function StripManager({ initial, shorUrl }: { initial: StripItem[
         <Link href="/team" className="text-sm font-semibold text-brand">← Inbox</Link>
       </div>
       <p className="mt-1 text-sm text-gray-600">
-        The cards on the Shor plug home screen, top to bottom = first to last. {shown} showing. Changes appear within a minute.
+        The cards on the Shop Plug home screen, top to bottom = first to last. Each card reads: When • / What delivered to Where. {shown} showing. Changes appear within a minute.
         {shown < 2 && <strong className="text-amber-700"> Show at least 2 cards, or the backup set is used.</strong>}
       </p>
 
@@ -248,10 +248,10 @@ function AddCard({ onAdded, onError }: { onAdded: () => void; onError: (msg: str
           />
         </label>
         <div className="min-w-0 flex-1 space-y-2">
-          <input aria-label="What was delivered" placeholder="What was delivered, e.g. Gas refill (12.5kg)" value={f.item} maxLength={60} onChange={set("item")} className={input} />
+          <input aria-label="What was delivered" placeholder="What was delivered, e.g. 5k suya" value={f.item} maxLength={60} onChange={set("item")} className={input} />
           <div className="grid grid-cols-2 gap-2">
             <input aria-label="Delivered to (area)" list="strip-areas" placeholder="Area, e.g. Marian" value={f.area} maxLength={40} onChange={set("area")} className={input} />
-            <input aria-label="When" list="strip-when" placeholder="When, e.g. last night" value={f.when_text} maxLength={40} onChange={set("when_text")} className={input} />
+            <input aria-label="When" list="strip-when" placeholder="When, e.g. Last night" value={f.when_text} maxLength={40} onChange={set("when_text")} className={input} />
           </div>
           <input aria-label="What a tap asks for" placeholder="Tap asks for… (optional)" value={f.ask} maxLength={120} onChange={set("ask")} className={input} />
         </div>

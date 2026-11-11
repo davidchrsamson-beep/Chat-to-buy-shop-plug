@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-// Shor plug's two looks: WHITE (the default) and BLACK (the original night look).
+// errand's two looks: WHITE (the default) and BLACK (the original night look).
 // The buyer switches with the sun/moon button; the choice is remembered on that phone or laptop.
 //
-// How it works: every colour (background "night", text "snow", cards "panel", lines,
+// How it works: every errand colour (background "night", text "snow", cards "panel", lines,
 // grey text "mute") is a named colour. White mode simply swaps those names to light colours,
 // so every screen follows without changing each part of the page.
 

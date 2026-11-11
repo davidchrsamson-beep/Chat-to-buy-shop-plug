@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-// The Shor plug team inbox. Only accounts listed in team_members can read or reply:
+// The Shop Plug team inbox. Only accounts listed in team_members can read or reply:
 // the database checks this on every call, so these actions can't be misused by others.
 
 export type InboxRequest = {
