@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { appPath } from "@/lib/paths";
+import { appPath } from "@chat/lib/paths";
 
 // Orders Shop Plug has delivered (photos and short videos used with permission).
 // Exactly two show at a time, and the strip moves along by one every 8 seconds

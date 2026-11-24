@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -9,22 +10,17 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_BASE_PATH: "/find-a-plug",
+  },
+  experimental: {
+    externalDir: true,
+  },
+  outputFileTracingRoot: path.resolve(process.cwd(), ".."),
   poweredByHeader: false,
   // Don't print server action inputs (they include passwords) in the terminal.
   logging: {
     serverFunctions: false,
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/find-a-plug",
-        destination: "https://shopplug.netlify.app/find-a-plug",
-      },
-      {
-        source: "/find-a-plug/:path*",
-        destination: "https://shopplug.netlify.app/find-a-plug/:path*",
-      },
-    ];
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

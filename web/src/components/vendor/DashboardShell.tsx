@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOut } from "@/app/vendor/actions";
-import ShopPlugMark from "@/components/market/ShopPlugMark";
+import ShopPlugMark from "@chat/components/ShopPlugMark";
 
 const TABS = [
   { key: "overview", label: "Overview", href: "/vendor/dashboard" },

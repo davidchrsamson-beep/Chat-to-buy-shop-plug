@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FIND_A_PLUG_URL } from "@/lib/urls";
-import ShopPlugMark from "./ShopPlugMark";
+import ShopPlugMark from "@chat/components/ShopPlugMark";
 
 export default function SiteHeader() {
   return (

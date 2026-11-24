@@ -2,7 +2,7 @@
 
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
-import { db } from "@/lib/supabase";
+import { db } from "@chat/lib/supabase";
 
 // Shop Plug requests: the customer's side of the chat with the team.
 // Every call carries the customer's secret code (kept only on their phone);

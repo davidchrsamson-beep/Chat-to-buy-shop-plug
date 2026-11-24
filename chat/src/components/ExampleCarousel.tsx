@@ -1,23 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { appPath } from "@/lib/paths";
+import { IconImage } from "./Icons";
 
-// Real-photo examples of what Shor plug is for. Exactly two show at a time, and the strip
+// Real-photo examples of what errand is for. Exactly two show at a time, and the strip
 // moves along by one every few seconds (it pauses while touched; swipe to move it yourself).
-// Tapping a card opens the request chat with that request ready to send.
-type Slide = { image: string; ask: string; tag: string };
+// Tapping a card asks errand for that thing.
+type Slide = { image?: string; ask: string; tag: string; photo?: boolean };
 
 const SLIDES: Slide[] = [
-  { image: appPath("/examples/baileys.jpg"), ask: "Baileys delivered to Marian by 1am", tag: "🛵 Marian · by 1am" },
-  { image: appPath("/examples/yogurt-starter.jpg"), ask: "Yogurt culture around Atekong", tag: "🛵 Atekong · today" },
-  { image: appPath("/examples/greek-yogurt.jpg"), ask: "Greek yogurt delivered to State Housing tonight", tag: "🛵 State Housing · tonight" },
-  { image: appPath("/examples/gift-box.jpg"), ask: "Gift box for my babe under ₦20k", tag: "🎁 Under ₦20k" },
+  { image: "/examples/baileys.jpg", ask: "Baileys delivered to Marian by 1am", tag: "🛵 Marian · by 1am" },
+  { image: "/examples/yogurt-starter.jpg", ask: "Yogurt culture around Atekong", tag: "🛵 Atekong · today" },
+  { image: "/examples/greek-yogurt.jpg", ask: "Greek yogurt delivered to State Housing tonight", tag: "🛵 State Housing · tonight" },
+  { image: "/examples/gift-box.jpg", ask: "Gift box for my babe under ₦20k", tag: "🎁 Under ₦20k" },
+  { ask: "Find this from a photo", tag: "📷 Snap & search", photo: true },
 ];
 const N = SLIDES.length;
 const LOOP = [...SLIDES, ...SLIDES.slice(0, 2)]; // the first two again at the end, for a seamless loop
 
-export default function ExampleCarousel({ onAsk }: { onAsk: (text: string) => void }) {
+export default function ExampleCarousel({ onAsk, onPhoto }: { onAsk: (text: string) => void; onPhoto: () => void }) {
   const [index, setIndex] = useState(0);
   const [animate, setAnimate] = useState(true);
   const [paused, setPaused] = useState(false);
@@ -86,12 +87,18 @@ export default function ExampleCarousel({ onAsk }: { onAsk: (text: string) => vo
               <button
                 type="button"
                 tabIndex={i >= N ? -1 : 0}
-                onClick={() => onAsk(s.ask)}
+                onClick={() => (s.photo ? onPhoto() : onAsk(s.ask))}
                 className="block w-full overflow-hidden rounded-[20px] border border-line bg-panel text-left transition hover:border-line-strong"
               >
-                <div className="relative aspect-[4/5] w-full bg-[var(--placeholder)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={s.image} alt="" loading={i < 2 ? "eager" : "lazy"} draggable={false} className="h-full w-full object-cover" />
+                <div className="relative aspect-[4/5] w-full bg-[#2A2B31]">
+                  {s.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={s.image} alt="" loading={i < 2 ? "eager" : "lazy"} draggable={false} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-accent">
+                      <span className="scale-[2.2]"><IconImage /></span>
+                    </div>
+                  )}
                   {/* The request, written on the product */}
                   <span className="absolute inset-x-2 bottom-2 truncate rounded-full bg-night/80 px-2.5 py-1 text-[11px] font-semibold text-snow backdrop-blur">
                     {s.tag}

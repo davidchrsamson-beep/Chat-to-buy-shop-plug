@@ -38,6 +38,7 @@ html:not([data-theme="dark"]) {
 html:not([data-theme="dark"]) body { background: #FFFFFF; color: #16171C; }
 
 html[data-theme="dark"] { color-scheme: dark; }
+html[data-theme="dark"] body { background: var(--color-night); color: var(--color-snow); }
 `;
 
 const KEY = "shorplug-theme";

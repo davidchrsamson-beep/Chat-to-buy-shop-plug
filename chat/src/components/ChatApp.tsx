@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BRAND } from "@/lib/brand";
-import { isChristmasEdition } from "@/lib/season";
+import Link from "next/link";
+import { BRAND } from "@chat/lib/brand";
+import { isChristmasEdition } from "@chat/lib/season";
 import DeliveredCarousel, { type Delivery } from "./DeliveredCarousel";
 import { ChristmasBadge, FestiveBackdrop } from "./Festive";
 import PlugFace from "./PlugFace";
 import RequestChat, { savedRequestCode } from "./RequestChat";
+import ShopPlugMark from "./ShopPlugMark";
 import { THEME_STYLES, ThemeToggle, useTheme } from "./Theme";
 import TypingDemo from "./TypingDemo";
 
@@ -57,11 +59,20 @@ export default function ChatApp({ deliveries }: { deliveries?: Delivery[] }) {
             </div>
           )}
           <header className="flex h-11 items-center justify-between gap-2">
-            <span className="flex items-center gap-2">
-              <PlugFace size={30} />
+            <Link href="/" aria-label={`${BRAND} home`} className="flex shrink-0 items-center gap-2">
+              <ShopPlugMark size={30} />
               <span className="text-lg font-bold tracking-tight">{BRAND}</span>
-            </span>
-            <ThemeToggle theme={theme} onToggle={toggle} />
+            </Link>
+            <nav aria-label="Main navigation" className="flex items-center gap-2">
+              <a href="/find-a-plug" className="whitespace-nowrap text-xs font-semibold text-snow hover:text-accent sm:text-sm">
+                Find a Plug
+              </a>
+              <Link href="/vendor/signup" className="whitespace-nowrap rounded-full bg-accent px-3 py-2 text-xs font-semibold text-night sm:text-sm">
+                <span className="sm:hidden">Sell</span>
+                <span className="hidden sm:inline">Sell on Shop Plug</span>
+              </Link>
+              <ThemeToggle theme={theme} onToggle={toggle} />
+            </nav>
           </header>
 
           {/* Right under the logo: someone "typing" an order, then the offer */}

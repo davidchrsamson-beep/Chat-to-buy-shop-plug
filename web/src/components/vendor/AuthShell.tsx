@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import ShopPlugMark from "@/components/market/ShopPlugMark";
+import ShopPlugMark from "@chat/components/ShopPlugMark";
 
 // The simple frame around sign-up, login and password screens (as in the current site).
 export default function AuthShell({ children }: { children: ReactNode }) {

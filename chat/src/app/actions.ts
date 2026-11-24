@@ -2,14 +2,14 @@
 
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
-import { AiError, aiConfigured, askJSON } from "@/lib/ai";
-import { CALABAR_AREAS, CALABAR_WIDE, normaliseArea } from "@/lib/areas";
-import { DAY_NAMES, formatMinutes, lagosNow } from "@/lib/hours";
-import { rankResults, type SearchRow, type VendorResult } from "@/lib/match";
-import { parseRequest } from "@/lib/parse";
-import { db } from "@/lib/supabase";
+import { AiError, aiConfigured, askJSON } from "@chat/lib/ai";
+import { CALABAR_AREAS, CALABAR_WIDE, normaliseArea } from "@chat/lib/areas";
+import { DAY_NAMES, formatMinutes, lagosNow } from "@chat/lib/hours";
+import { rankResults, type SearchRow, type VendorResult } from "@chat/lib/match";
+import { parseRequest } from "@chat/lib/parse";
+import { db } from "@chat/lib/supabase";
 
-export type { MoreItem, VendorResult } from "@/lib/match";
+export type { MoreItem, VendorResult } from "@chat/lib/match";
 
 export type Find = { productId: string; productName: string; vendorSlug: string; area: string | null; foundAt: string };
 

@@ -1,7 +1,7 @@
 "use client";
 
-import type { SearchPrefs } from "@/app/actions";
-import { CALABAR_AREAS } from "@/lib/areas";
+import type { SearchPrefs } from "@chat/app/actions";
+import { CALABAR_AREAS } from "@chat/lib/areas";
 
 // Tap-able extras above the message box. They add to whatever the buyer types:
 // "Tonight" (open tonight), "Delivered" (stores that deliver), "Near me" (pick your area once).

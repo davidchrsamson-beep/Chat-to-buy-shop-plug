@@ -11,14 +11,14 @@ import {
   type PlugMessage,
   type Quote,
   type RequestState,
-} from "@/app/request-actions";
-import { CALABAR_AREAS } from "@/lib/areas";
-import { BRAND } from "@/lib/brand";
-import { EXPERIMENTS } from "@/lib/experiments";
-import { formatNaira } from "@/lib/format";
-import { lagosNow } from "@/lib/hours";
-import { appPath } from "@/lib/paths";
-import { shrinkPhoto } from "@/lib/photo";
+} from "@chat/app/request-actions";
+import { CALABAR_AREAS } from "@chat/lib/areas";
+import { BRAND } from "@chat/lib/brand";
+import { EXPERIMENTS } from "@chat/lib/experiments";
+import { formatNaira } from "@chat/lib/format";
+import { lagosNow } from "@chat/lib/hours";
+import { appPath } from "@chat/lib/paths";
+import { shrinkPhoto } from "@chat/lib/photo";
 import PlugFace from "./PlugFace";
 import { ThemeToggle } from "./Theme";
 

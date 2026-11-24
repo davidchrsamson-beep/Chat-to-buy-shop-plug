@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ShopPlugMark from "@/components/market/ShopPlugMark";
+import ShopPlugMark from "@chat/components/ShopPlugMark";
 
 export default function StoreNotFound() {
   return (

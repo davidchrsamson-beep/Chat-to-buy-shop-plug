@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { adminDb } from "@/lib/admin-db";
-import { BRAND } from "@/lib/brand";
-import { formatNaira } from "@/lib/format";
-import { lagosNow } from "@/lib/hours";
-import { appPath } from "@/lib/paths";
+import { adminDb } from "@chat/lib/admin-db";
+import { BRAND } from "@chat/lib/brand";
+import { formatNaira } from "@chat/lib/format";
+import { lagosNow } from "@chat/lib/hours";
+import { appPath } from "@chat/lib/paths";
 import { LogoMark } from "../PlugFace";
 import { THEME_STYLES, ThemeToggle, useTheme } from "../Theme";
 

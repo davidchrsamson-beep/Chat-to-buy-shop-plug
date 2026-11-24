@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../../chat/src";
 
 /* Ndu's brand colours: bg-brand, text-ink, etc. */
 @theme {
@@ -7,6 +8,13 @@
   --color-brand-tint: #ecfdf5;  /* very light green boxes */
   --color-ink: #111827;         /* near-black */
   --color-led: #ffb020;         /* the glowing amber of moving display signs */
+  --color-night: #0E0F12;
+  --color-panel: #17181C;
+  --color-line: #26272D;
+  --color-line-strong: #33343B;
+  --color-mute: #A1A1AA;
+  --color-snow: #F5F5F4;
+  --color-accent: #FF7A1A;
 }
 
 @theme inline {

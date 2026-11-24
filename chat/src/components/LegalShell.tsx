@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BRAND } from "@/lib/brand";
-import { appPath } from "@/lib/paths";
+import { BRAND } from "@chat/lib/brand";
+import { appPath } from "@chat/lib/paths";
 import { THEME_STYLES, useTheme } from "./Theme";
 
 // Simple reading layout for the Privacy and Terms pages (same white/black look as the app).

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import LegalShell from "@/components/LegalShell";
-import { BRAND } from "@/lib/brand";
+import LegalShell from "@chat/components/LegalShell";
+import { BRAND } from "@chat/lib/brand";
 
 export const metadata: Metadata = { title: `Terms & Conditions · ${BRAND}` };
 

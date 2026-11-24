@@ -11,8 +11,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Shop Plug — Calabar's finest vendors. One place.",
-  description: "Find local vendors, shop Calabar, or connect with a plug for anything you need.",
+  title: "Shop Plug — Order anything you want, day or late night.",
+  description: "Find Calabar vendors on Shop Plug, ask for anything, and pay vendors directly.",
+  icons: { icon: "/icon.svg" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
