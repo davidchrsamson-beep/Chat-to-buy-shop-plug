@@ -24,6 +24,13 @@ const nextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  webpack(config) {
+    config.resolve.modules = [
+      path.resolve(process.cwd(), "node_modules"),
+      ...(config.resolve.modules ?? ["node_modules"]),
+    ];
+    return config;
+  },
 };
 
 export default nextConfig;
