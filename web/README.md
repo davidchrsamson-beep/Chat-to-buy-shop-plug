@@ -1,11 +1,11 @@
-# Shop Plug
+# Shop Plug marketplace
 
-Shop Plug runs as one Next.js application. The home page is the vendor-search experience, with the original Errand examples and direct vendor contact. The transportation request service is available at `/find-a-plug` from the main navigation. The separate vendor marketplace remains at `/marketplace` without a public navigation link and is marked `noindex`.
+The main Shop Plug website is the Errand experience in `chat/`, with Find a Plug at `/find-a-plug`. This separate Next.js app contains the vendor marketplace, storefronts, and vendor-management experience. Deploy `chat/` for the unified Errand and Find a Plug website; see [chat/README.md](../chat/README.md).
 
 ## Project layout
 
-- `web/` — unified Next.js app and Hostinger app root.
-- `chat/` — request-service source imported by `web/`; keep this folder beside `web/` when building.
+- `chat/` — primary Errand and Find a Plug website.
+- `web/` — separate vendor marketplace and vendor-management app.
 - `supabase/` — shared database migrations.
 
 ## Run locally
@@ -17,6 +17,6 @@ Shop Plug runs as one Next.js application. The home page is the vendor-search ex
 
 ## Deploy directly to Hostinger
 
-Upload the entire project folder so both `web/` and `chat/` are present. Configure the Hostinger Node.js app root as `web/`, then run `npm install`, `npm run build`, and `npm run start` from that directory. Set the required environment variables from `.env.example` in Hostinger's app settings; keep server-only keys such as `OPENAI_API_KEY` private.
+To deploy this separate vendor marketplace, configure the Hostinger Node.js app root as `web/`, then run `npm install`, `npm run build`, and `npm run start` from that directory. Set its environment variables from `web/.env.example`. For the primary Errand and Find a Plug website, deploy `chat/` instead and follow [chat/README.md](../chat/README.md).
 
-No Netlify proxy or Git deployment is required for this app.
+No Netlify proxy or Git deployment is required.
