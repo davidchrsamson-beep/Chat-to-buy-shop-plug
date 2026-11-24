@@ -1,6 +1,5 @@
 import ChatApp from "@chat/components/ChatApp";
 import type { Delivery } from "@chat/components/DeliveredCarousel";
-import { appPath } from "@chat/lib/paths";
 import { db } from "@chat/lib/supabase";
 
 type StripRow = { item: string; area: string; when_text: string; ask: string; image_url: string; video_url: string | null };
@@ -21,8 +20,8 @@ async function loadStrip(): Promise<Delivery[]> {
     area: r.area,
     when: r.when_text,
     ask: r.ask || `I need ${r.item.toLowerCase()} delivered, please`,
-    image: appPath(r.image_url),
-    video: r.video_url ? appPath(r.video_url) : null,
+    image: r.image_url,
+    video: r.video_url,
   }));
 }
 

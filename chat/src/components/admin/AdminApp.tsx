@@ -5,7 +5,6 @@ import { adminDb } from "@chat/lib/admin-db";
 import { BRAND } from "@chat/lib/brand";
 import { formatNaira } from "@chat/lib/format";
 import { lagosNow } from "@chat/lib/hours";
-import { appPath } from "@chat/lib/paths";
 import { LogoMark } from "../PlugFace";
 import { THEME_STYLES, ThemeToggle, useTheme } from "../Theme";
 
@@ -129,7 +128,7 @@ export default function AdminApp() {
           {phase === "recover" && (
             <NewPassword
               onDone={() => {
-                window.history.replaceState(null, "", appPath("/admin"));
+                window.history.replaceState(null, "", "/admin");
                 void check();
               }}
             />
@@ -164,7 +163,7 @@ function Login({ onDone }: { onDone: () => void }) {
   async function forgot() {
     if (!email.trim()) return setMsg({ ok: false, text: "Type your email first, then tap “Forgot password?”." });
     setBusy(true);
-    const { error } = await adminDb().auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}${appPath("/admin")}` });
+    const { error } = await adminDb().auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/admin` });
     setBusy(false);
     setMsg(
       error

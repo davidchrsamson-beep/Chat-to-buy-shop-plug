@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { BRAND, TAGLINE } from "@chat/lib/brand";
-import { appPath } from "@chat/lib/paths";
 import ChatHomePage from "@chat/components/ChatHomePage";
 
 // What shows when the link is shared (WhatsApp, Instagram, etc.) and on the browser tab.
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: BRAND,
     description: TAGLINE,
-    images: [appPath("/delivered/hair.jpg")],
+    images: ["/delivered/hair.jpg"],
   },
 };
 

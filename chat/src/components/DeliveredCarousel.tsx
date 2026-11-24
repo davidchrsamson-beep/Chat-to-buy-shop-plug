@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { appPath } from "@chat/lib/paths";
 
 // Orders Shop Plug has delivered (photos and short videos used with permission).
 // Exactly two show at a time, and the strip moves along by one every 8 seconds
@@ -20,12 +19,12 @@ export type Delivery = {
 };
 
 const BACKUP: Delivery[] = [
-  { item: "5k suya", area: "State Housing", when: "Last night", image: appPath("/delivered/suya-night.jpg"), video: appPath("/delivered/suya-night.mp4"), ask: "I want suya delivered tonight, please" },
-  { item: "Fresh yoghurt", area: "Parliamentary", when: "Today", image: appPath("/delivered/yoghurt.jpg"), ask: "I need fresh yoghurt delivered, please" },
-  { item: "Crates of eggs", area: "Atekong", when: "Today", image: appPath("/delivered/eggs.jpg"), ask: "I need crates of eggs delivered, please" },
-  { item: "Perfumes and body splash", area: "Satellite Town", when: "Yesterday", image: appPath("/delivered/perfume-bag.jpg"), ask: "I need perfume delivered, please" },
-  { item: "Human hair bundle", area: "Marian", when: "Today", image: appPath("/delivered/hair.jpg"), ask: "I need human hair delivered, please" },
-  { item: "Suya", area: "Atimbo", when: "Yesterday", image: appPath("/delivered/suya-day.jpg"), video: appPath("/delivered/suya-day.mp4"), ask: "I want suya delivered, please" },
+  { item: "5k suya", area: "State Housing", when: "Last night", image: "/delivered/suya-night.jpg", video: "/delivered/suya-night.mp4", ask: "I want suya delivered tonight, please" },
+  { item: "Fresh yoghurt", area: "Parliamentary", when: "Today", image: "/delivered/yoghurt.jpg", ask: "I need fresh yoghurt delivered, please" },
+  { item: "Crates of eggs", area: "Atekong", when: "Today", image: "/delivered/eggs.jpg", ask: "I need crates of eggs delivered, please" },
+  { item: "Perfumes and body splash", area: "Satellite Town", when: "Yesterday", image: "/delivered/perfume-bag.jpg", ask: "I need perfume delivered, please" },
+  { item: "Human hair bundle", area: "Marian", when: "Today", image: "/delivered/hair.jpg", ask: "I need human hair delivered, please" },
+  { item: "Suya", area: "Atimbo", when: "Yesterday", image: "/delivered/suya-day.jpg", video: "/delivered/suya-day.mp4", ask: "I want suya delivered, please" },
 ];
 const SECONDS_PER_MOVE = 8;
 
