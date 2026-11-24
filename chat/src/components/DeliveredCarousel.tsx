@@ -26,6 +26,11 @@ const BACKUP: Delivery[] = [
   { item: "Human hair bundle", area: "Marian", when: "Today", image: "/delivered/hair.jpg", ask: "I need human hair delivered, please" },
   { item: "Suya", area: "Atimbo", when: "Yesterday", image: "/delivered/suya-day.jpg", video: "/delivered/suya-day.mp4", ask: "I want suya delivered, please" },
 ];
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+function assetUrl(path: string) {
+  return path.startsWith("/") ? `${BASE_PATH}${path}` : path;
+}
+
 const SECONDS_PER_MOVE = 8;
 
 export default function DeliveredCarousel({ items, onAsk }: { items?: Delivery[]; onAsk: (text: string) => void }) {
@@ -108,8 +113,8 @@ export default function DeliveredCarousel({ items, onAsk }: { items?: Delivery[]
                 <div className="relative aspect-[4/5] w-full bg-[var(--placeholder)]">
                   {d.video ? (
                     <video
-                      src={d.video}
-                      poster={d.image}
+                      src={assetUrl(d.video)}
+                      poster={assetUrl(d.image)}
                       muted
                       loop
                       autoPlay={!still}
@@ -119,7 +124,7 @@ export default function DeliveredCarousel({ items, onAsk }: { items?: Delivery[]
                     />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={d.image} alt="" loading={i < 2 ? "eager" : "lazy"} draggable={false} className="h-full w-full object-cover" />
+                    <img src={assetUrl(d.image)} alt="" loading={i < 2 ? "eager" : "lazy"} draggable={false} className="h-full w-full object-cover" />
                   )}
                 </div>
                 {/* Caption: WHEN, then WHAT delivered to WHERE */}
