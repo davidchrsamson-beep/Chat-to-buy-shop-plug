@@ -25,6 +25,7 @@ const TEAM_WHATSAPP = (process.env.NEXT_PUBLIC_TEAM_WHATSAPP ?? "").replace(/\D/
 const TOKEN_KEY = "shorplug-token";
 const REQUEST_KEY = "shorplug-request";
 const POLL_MS = 4000;
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 // Remembered on this phone only (a convenience; the chat still works if it isn't available).
 function store(key: string, value?: string | null) {
@@ -385,9 +386,9 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
         </form>
       )}
       <p className="pb-3 text-center text-[11px] text-mute">
-        <a href="/privacy" className="hover:underline">Privacy</a>
+        <a href={`${BASE_PATH}/privacy`} className="hover:underline">Privacy</a>
         <span aria-hidden="true" className="mx-1.5">•</span>
-        <a href="/terms" className="hover:underline">Terms &amp; Conditions</a>
+        <a href={`${BASE_PATH}/terms`} className="hover:underline">Terms &amp; Conditions</a>
       </p>
     </div>
   );
