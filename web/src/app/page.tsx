@@ -9,6 +9,7 @@ import SiteFooter from "@/components/market/SiteFooter";
 import Marquee from "@/components/ui/Marquee";
 import { sampleProducts } from "@/lib/sample-data";
 import { isChristmasEdition } from "@/lib/season";
+import { FIND_A_PLUG_URL } from "@/lib/urls";
 
 export default function Home() {
   // Sample groupings for now; the next part switches these to real vendors' products.
@@ -32,6 +33,19 @@ export default function Home() {
 
       <main className="relative z-10">
         <Hero />
+        <section aria-labelledby="find-a-plug-title" className="mx-auto max-w-5xl px-5 pb-8">
+          <div className="flex flex-col gap-4 border-y border-brand/20 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 id="find-a-plug-title" className="font-serif text-xl font-bold">Find a Plug</h2>
+              <p className="mt-1 max-w-xl text-sm text-gray-600">
+                Looking for something beyond the marketplace? Tell a local plug what you need and arrange delivery in chat.
+              </p>
+            </div>
+            <a href={FIND_A_PLUG_URL} className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark">
+              Find a Plug <span aria-hidden="true" className="ml-2">→</span>
+            </a>
+          </div>
+        </section>
         <CategoryNav active="all" />
 
         <MarketSection
@@ -41,7 +55,7 @@ export default function Home() {
           items={topChoices.map((p) => <ProductCard key={p.id} product={p} />)}
         />
 
-        <LiveNote>✨ New store just joined Ndu 10 hours ago — check them out</LiveNote>
+        <LiveNote>✨ New store just joined Shop Plug 10 hours ago — check them out</LiveNote>
 
         <MarketSection
           title="Best of Budget"

@@ -14,6 +14,18 @@ const nextConfig: NextConfig = {
   logging: {
     serverFunctions: false,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/find-a-plug",
+        destination: "https://shopplug.netlify.app/find-a-plug",
+      },
+      {
+        source: "/find-a-plug/:path*",
+        destination: "https://shopplug.netlify.app/find-a-plug/:path*",
+      },
+    ];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

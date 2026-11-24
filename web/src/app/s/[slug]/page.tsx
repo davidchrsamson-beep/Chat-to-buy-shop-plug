@@ -19,9 +19,9 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const store = await loadStore(slug);
-  if (!store) return { title: "Store not found — Ndu" };
+  if (!store) return { title: "Store not found — Shop Plug" };
   return {
-    title: `${store.vendor.business_name} — on Ndu`,
+    title: `${store.vendor.business_name} — on Shop Plug`,
     description: store.vendor.tagline ?? `Shop ${store.vendor.business_name} in Calabar. Order on WhatsApp.`,
   };
 }
@@ -159,7 +159,7 @@ export default async function StorefrontPage({ params, searchParams }: Props) {
       <footer className="border-t border-gray-100 px-5 py-8 text-center text-xs text-gray-400">
         © {vendor.business_name} · Powered by{" "}
         {/* Leads only to "open your own store", never to the main market (we don't take vendors' customers). */}
-        <Link href="/vendor/signup" className="font-semibold text-gray-500 hover:text-brand">Ndu</Link>
+        <Link href="/vendor/signup" className="font-semibold text-gray-500 hover:text-brand">Shop Plug</Link>
       </footer>
     </div>
   );

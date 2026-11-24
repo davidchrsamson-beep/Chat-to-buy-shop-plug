@@ -17,6 +17,7 @@ import { BRAND } from "@/lib/brand";
 import { EXPERIMENTS } from "@/lib/experiments";
 import { formatNaira } from "@/lib/format";
 import { lagosNow } from "@/lib/hours";
+import { appPath } from "@/lib/paths";
 import { shrinkPhoto } from "@/lib/photo";
 import PlugFace from "./PlugFace";
 import { ThemeToggle } from "./Theme";
@@ -385,9 +386,9 @@ export default function RequestChat({ initialText = "", onBack, theme, onToggleT
         </form>
       )}
       <p className="pb-3 text-center text-[11px] text-mute">
-        <a href="/privacy" className="hover:underline">Privacy</a>
+        <a href={appPath("/privacy")} className="hover:underline">Privacy</a>
         <span aria-hidden="true" className="mx-1.5">•</span>
-        <a href="/terms" className="hover:underline">Terms &amp; Conditions</a>
+        <a href={appPath("/terms")} className="hover:underline">Terms &amp; Conditions</a>
       </p>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { appPath } from "@/lib/paths";
 
 // Real-photo examples of what Shor plug is for. Exactly two show at a time, and the strip
 // moves along by one every few seconds (it pauses while touched; swipe to move it yourself).
@@ -8,10 +9,10 @@ import { useEffect, useRef, useState } from "react";
 type Slide = { image: string; ask: string; tag: string };
 
 const SLIDES: Slide[] = [
-  { image: "/examples/baileys.jpg", ask: "Baileys delivered to Marian by 1am", tag: "🛵 Marian · by 1am" },
-  { image: "/examples/yogurt-starter.jpg", ask: "Yogurt culture around Atekong", tag: "🛵 Atekong · today" },
-  { image: "/examples/greek-yogurt.jpg", ask: "Greek yogurt delivered to State Housing tonight", tag: "🛵 State Housing · tonight" },
-  { image: "/examples/gift-box.jpg", ask: "Gift box for my babe under ₦20k", tag: "🎁 Under ₦20k" },
+  { image: appPath("/examples/baileys.jpg"), ask: "Baileys delivered to Marian by 1am", tag: "🛵 Marian · by 1am" },
+  { image: appPath("/examples/yogurt-starter.jpg"), ask: "Yogurt culture around Atekong", tag: "🛵 Atekong · today" },
+  { image: appPath("/examples/greek-yogurt.jpg"), ask: "Greek yogurt delivered to State Housing tonight", tag: "🛵 State Housing · tonight" },
+  { image: appPath("/examples/gift-box.jpg"), ask: "Gift box for my babe under ₦20k", tag: "🎁 Under ₦20k" },
 ];
 const N = SLIDES.length;
 const LOOP = [...SLIDES, ...SLIDES.slice(0, 2)]; // the first two again at the end, for a seamless loop

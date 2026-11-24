@@ -131,13 +131,13 @@ export default function StoreSettingsForm({ vendor }: { vendor: CurrentVendor })
         <div>
           <h2 id="delivery-heading" className="font-semibold">Delivery &amp; opening hours</h2>
           <p className="mt-0.5 text-xs text-gray-500">
-            errand uses this to match urgent requests, like “drinks delivered to Marian by 1am”. Stores that deliver and
+            Find a Plug uses this to match urgent requests, like “drinks delivered to Marian by 1am”. Stores that deliver and
             are open at the time a buyer needs show up first.
           </p>
         </div>
 
         <Field
-          label="What makes you different? (shown to buyers in errand)"
+          label="What makes you different? (shown to buyers in Find a Plug)"
           name="standout"
           maxLength={140}
           placeholder="e.g. Drinks delivered till 3am, even on Sundays"

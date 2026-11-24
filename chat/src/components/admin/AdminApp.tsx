@@ -5,6 +5,7 @@ import { adminDb } from "@/lib/admin-db";
 import { BRAND } from "@/lib/brand";
 import { formatNaira } from "@/lib/format";
 import { lagosNow } from "@/lib/hours";
+import { appPath } from "@/lib/paths";
 import { LogoMark } from "../PlugFace";
 import { THEME_STYLES, ThemeToggle, useTheme } from "../Theme";
 
@@ -128,7 +129,7 @@ export default function AdminApp() {
           {phase === "recover" && (
             <NewPassword
               onDone={() => {
-                window.history.replaceState(null, "", "/admin");
+                window.history.replaceState(null, "", appPath("/admin"));
                 void check();
               }}
             />
@@ -163,7 +164,7 @@ function Login({ onDone }: { onDone: () => void }) {
   async function forgot() {
     if (!email.trim()) return setMsg({ ok: false, text: "Type your email first, then tap “Forgot password?”." });
     setBusy(true);
-    const { error } = await adminDb().auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/admin` });
+    const { error } = await adminDb().auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}${appPath("/admin")}` });
     setBusy(false);
     setMsg(
       error

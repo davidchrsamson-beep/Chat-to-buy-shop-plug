@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import StripManager from "@/components/team/StripManager";
 import TeamGate from "@/components/team/TeamGate";
 import { teamAccess } from "@/lib/team";
+import { FIND_A_PLUG_URL } from "@/lib/urls";
 import { listStrip } from "./actions";
 
 export const metadata: Metadata = { title: "Shop Plug photo strip", robots: { index: false, follow: false } };
@@ -14,5 +15,5 @@ export default async function StripPage() {
   if (state === "login") redirect("/vendor/login");
   if (state !== "ok") return <TeamGate state={state} email={email} />;
 
-  return <StripManager initial={await listStrip()} shorUrl={(process.env.NEXT_PUBLIC_SHOR_URL ?? "https://nduchat.netlify.app").replace(/\/$/, "")} />;
+  return <StripManager initial={await listStrip()} shorUrl={(process.env.NEXT_PUBLIC_SHOR_URL ?? FIND_A_PLUG_URL).replace(/\/$/, "")} />;
 }

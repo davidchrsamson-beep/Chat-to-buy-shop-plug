@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOut } from "@/app/vendor/actions";
+import ShopPlugMark from "@/components/market/ShopPlugMark";
 
 const TABS = [
   { key: "overview", label: "Overview", href: "/vendor/dashboard" },
@@ -26,8 +27,8 @@ export default function DashboardShell({
       <header className="border-b border-gray-100 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 pt-4">
           <div className="min-w-0">
-            <span className="font-serif text-xl font-bold">
-              Ndu<span className="text-brand">.</span>
+            <span className="flex items-center gap-2 font-serif text-xl font-bold">
+              <ShopPlugMark size={28} /> Shop Plug
             </span>
             <p className="truncate text-xs text-gray-500">{storeName}</p>
           </div>

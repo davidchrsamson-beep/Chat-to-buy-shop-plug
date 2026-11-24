@@ -23,7 +23,7 @@ const ATTRIBUTE_KEYS = [
   "size", "colour", "material", "brand", "volume", "scent", "length", "hair_type", "model", "age_range", "dimensions",
 ] as const;
 
-const SYSTEM = `You help small vendors in Calabar, Nigeria, list products on Ndu, an online market.
+const SYSTEM = `You help small vendors in Calabar, Nigeria, list products on Shop Plug, an online market.
 You look at product photos and write honest, simple product listings in Nigerian English.
 Rules:
 - First decide WHAT IS BEING SOLD in each photo. Look at the whole photo, not one item in it.
@@ -79,7 +79,7 @@ export async function draftProductsWithAI(photoUrls: string[]): Promise<DraftRes
   // The product types this store sells, so the AI can only choose from them.
   const categories = await loadCategoryOptions(supabase, vendor.id);
   const types = categories.flatMap((c) => c.subcategories.map((s) => ({ id: s.id, label: `${c.name} › ${s.name}` })));
-  if (types.length === 0) return { ok: false, error: "Your store has no product types yet. Please contact Ndu support." };
+  if (types.length === 0) return { ok: false, error: "Your store has no product types yet. Please contact Shop Plug support." };
 
   const schema = {
     type: "object",
@@ -141,7 +141,7 @@ export async function draftProductsWithAI(photoUrls: string[]): Promise<DraftRes
     });
   } catch (e) {
     const reason = e instanceof AiError ? e.reason : "failed";
-    if (reason === "not_configured") return { ok: false, error: "The AI assistant isn't set up yet (no API key). Please contact Ndu support." };
+    if (reason === "not_configured") return { ok: false, error: "The AI assistant isn't set up yet (no API key). Please contact Shop Plug support." };
     if (reason === "busy") return { ok: false, error: "The AI is busy right now. Please try again in a minute." };
     return { ok: false, error: "The AI couldn't read these photos. Please try again, or add the products manually." };
   }

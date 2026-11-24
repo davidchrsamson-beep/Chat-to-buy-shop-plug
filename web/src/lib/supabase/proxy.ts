@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // Pages only a logged-in vendor may open.
 const PROTECTED = ["/vendor/dashboard", "/vendor/products", "/vendor/settings", "/vendor/listing", "/team"];
 // Pages a logged-in vendor doesn't need (send them to their dashboard instead).
-// Sign-up is NOT here: "Sell on Ndu" must always show the sign-up page (it explains if you're already logged in).
+// Sign-up is NOT here: "Sell on Shop Plug" must always show the sign-up page (it explains if you're already logged in).
 const GUEST_ONLY = ["/vendor/login"];
 
 // Runs before every vendor page: refreshes the login if it's about to expire,

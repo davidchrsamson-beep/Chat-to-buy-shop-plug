@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ChatApp from "@/components/ChatApp";
 import type { Delivery } from "@/components/DeliveredCarousel";
 import { BRAND, TAGLINE } from "@/lib/brand";
+import { appPath } from "@/lib/paths";
 import { db } from "@/lib/supabase";
 
 // What shows when the link is shared (WhatsApp, Instagram, etc.) and on the browser tab.
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: BRAND,
     description: TAGLINE,
-    images: ["/delivered/hair.jpg"],
+    images: [appPath("/delivered/hair.jpg")],
   },
 };
 
@@ -37,8 +38,8 @@ async function loadStrip(): Promise<Delivery[]> {
     area: r.area,
     when: r.when_text,
     ask: r.ask || `I need ${r.item.toLowerCase()} delivered, please`,
-    image: r.image_url,
-    video: r.video_url,
+    image: appPath(r.image_url),
+    video: r.video_url ? appPath(r.video_url) : null,
   }));
 }
 

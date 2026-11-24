@@ -125,7 +125,7 @@ export default function ProductForm({
             missing > 0 ? (
               <span className="text-amber-700">
                 Add {missing} more {missing === 1 ? "photo" : "photos"} from different angles (front, back, close-up) so
-                this product can appear in errand search and the market.
+                this product can appear in Find a Plug search and the market.
               </span>
             ) : (
               <span className="text-brand-dark">✓ Enough angles to appear in search.</span>
@@ -232,7 +232,7 @@ export default function ProductForm({
       <section className="space-y-4 rounded-2xl bg-white p-4 shadow-sm">
         <div>
           <h2 className="text-sm font-semibold">Details</h2>
-          <p className="text-xs text-gray-500">These help errand match your product to what buyers ask for.</p>
+          <p className="text-xs text-gray-500">These help Find a Plug match your product to what buyers ask for.</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {detailFields.map((f) => (

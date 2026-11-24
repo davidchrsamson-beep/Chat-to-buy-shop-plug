@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
           <div className="mt-6 rounded-2xl bg-brand-tint p-5 text-sm text-gray-700">
             <p className="font-semibold text-brand-dark">Check your email</p>
             <p className="mt-1">
-              If <strong>{state.email}</strong> has an Ndu store, we&apos;ve sent a link to reset the password. It works once
+              If <strong>{state.email}</strong> has a Shop Plug store, we&apos;ve sent a link to reset the password. It works once
               and expires in 1 hour.
             </p>
           </div>

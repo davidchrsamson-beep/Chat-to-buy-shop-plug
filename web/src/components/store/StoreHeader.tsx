@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { recordVisit } from "@/app/s/actions";
 import { firstVisitThisSession, rememberSource } from "@/lib/store-source";
 
-// The storefront's top bar: Back (only for buyers who came from the Ndu market),
+// The storefront's top bar: Back (only for buyers who came from the Shop Plug marketplace),
 // the store's name, and a green Chat button to the vendor's WhatsApp.
 export default function StoreHeader({
   vendorId,
@@ -30,7 +30,7 @@ export default function StoreHeader({
     if (firstVisitThisSession(slug)) void recordVisit(vendorId, source);
   }, [slug, from, vendorId]);
 
-  const chatLink = `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi ${name}! I found your store on Ndu.`)}`;
+  const chatLink = `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Hi ${name}! I found your store on Shop Plug.`)}`;
 
   return (
     <header className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 backdrop-blur">

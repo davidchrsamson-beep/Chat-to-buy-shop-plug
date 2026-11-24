@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import AuthShell from "@/components/vendor/AuthShell";
 import LoginForm from "./LoginForm";
 
-export const metadata: Metadata = { title: "Vendor login — Ndu" };
+export const metadata: Metadata = { title: "Vendor login — Shop Plug" };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;

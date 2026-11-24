@@ -17,7 +17,7 @@ export default async function DashboardPage() {
     return (
       <div className="mx-auto max-w-md px-5 py-16 text-center">
         <p role="alert" className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
-          We couldn&apos;t find a store on this account. Please contact Ndu support.
+          We couldn&apos;t find a store on this account. Please contact Shop Plug support.
         </p>
         <form action={signOut} className="mt-6">
           <button className="min-h-11 rounded-xl border border-gray-200 px-5 font-semibold hover:border-brand">

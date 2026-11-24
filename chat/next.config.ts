@@ -27,6 +27,7 @@ const csp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH ?? "",
   poweredByHeader: false, // don't advertise what the site is built with
   logging: { serverFunctions: false }, // never print what people type (passwords, addresses) in server logs
   async headers() {

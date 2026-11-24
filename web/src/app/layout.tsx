@@ -11,8 +11,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Ndu — Calabar's finest vendors. One place.",
-  description: "Find any item from verified vendors in Calabar. Order. Get delivered.",
+  title: "Shop Plug — Calabar's finest vendors. One place.",
+  description: "Find local vendors, shop Calabar, or connect with a plug for anything you need.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

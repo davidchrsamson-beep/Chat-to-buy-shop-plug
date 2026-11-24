@@ -6,14 +6,14 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDay } from "@/lib/price";
 import SignupWizard, { type SignupCategory } from "./SignupWizard";
 
-export const metadata: Metadata = { title: "Open your free store — Ndu" };
+export const metadata: Metadata = { title: "Vendor sign-up — Shop Plug" };
 
 type SubRow = { id: number; name: string; sort_order: number };
 
 export default async function SignupPage() {
   const supabase = await createClient();
 
-  // Already logged in (e.g. a vendor tapping "Sell on Ndu" in errand): say so, instead of a confusing form.
+  // Already logged in: say so, instead of a confusing form.
   const { data: auth } = await supabase.auth.getClaims();
   if (auth?.claims) {
     const { data: store } = await supabase
@@ -25,7 +25,7 @@ export default async function SignupPage() {
     return (
       <AuthShell>
         <div className="mt-8 space-y-4 text-center">
-          <h1 className="text-2xl font-bold">Open your free store on Ndu</h1>
+          <h1 className="text-2xl font-bold">Open your free store on Shop Plug</h1>
           <p className="text-sm text-gray-600">
             You&apos;re logged in{store?.business_name ? <> as <strong>{store.business_name}</strong></> : null} on this device.
           </p>

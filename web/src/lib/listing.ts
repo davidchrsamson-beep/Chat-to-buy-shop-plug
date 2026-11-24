@@ -65,22 +65,22 @@ export function describeListing(s: ListingStatus): { tone: "good" | "warn" | "ba
     return {
       tone: "good",
       title: `Listed free until ${formatDay(s.until)}`,
-      body: "Your products appear in errand search and the Ndu market. Subscribe before then to stay listed.",
+      body: "Your products appear in Find a Plug search and the Shop Plug marketplace. Subscribe before then to stay listed.",
     };
   }
   if (s.reason === "paid" && s.until) {
-    return { tone: "good", title: `Listed until ${formatDay(s.until)}`, body: "Your products appear in errand search and the Ndu market." };
+    return { tone: "good", title: `Listed until ${formatDay(s.until)}`, body: "Your products appear in Find a Plug search and the Shop Plug marketplace." };
   }
   if (s.reason === "grace" && s.graceUntil) {
     return {
       tone: "warn",
       title: `Subscribe by ${formatDay(s.graceUntil)} to stay listed`,
-      body: "After that, your products leave errand search and the Ndu market. Your storefront link keeps working.",
+      body: "After that, your products leave Find a Plug search and the Shop Plug marketplace. Your storefront link keeps working.",
     };
   }
   return {
     tone: "bad",
     title: "Not listed in search",
-    body: "Your storefront link works, but buyers can't find you in errand or the Ndu market. Subscribe to get listed.",
+    body: "Your storefront link works, but buyers can't find you in Find a Plug or the Shop Plug marketplace. Subscribe to get listed.",
   };
 }

@@ -36,7 +36,7 @@ export default async function AiAddPage() {
       ) : (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
           <p className="font-semibold">The AI assistant comes with a listing plan</p>
-          <p className="mt-1">Subscribe to appear in errand search and the Ndu market, and the AI assistant is included.</p>
+          <p className="mt-1">Subscribe to appear in Find a Plug search and the Shop Plug marketplace, and the AI assistant is included.</p>
           <Link href="/vendor/listing" className="mt-3 inline-block font-semibold underline">See plans</Link>
         </div>
       )}

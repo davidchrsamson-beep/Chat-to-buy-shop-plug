@@ -55,7 +55,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
       <form action={deleteProduct} className="border-t border-gray-200 pt-6 pb-10">
         <input type="hidden" name="id" value={product.id} />
         <button className="min-h-11 text-sm font-medium text-red-600 hover:underline">Delete this product</button>
-        <p className="text-xs text-gray-400">It disappears from your store and search. Ndu support can restore it if needed.</p>
+        <p className="text-xs text-gray-400">It disappears from your store and search. Shop Plug support can restore it if needed.</p>
       </form>
     </DashboardShell>
   );

@@ -62,10 +62,10 @@ export default function BuyActions(p: Props) {
       {p.teamWhatsapp && (
         <button
           type="button"
-          onClick={() => whatsapp(p.teamWhatsapp, `Hi Ndu team! I need help buying ${p.productName} from ${p.vendorName}.`)}
+          onClick={() => whatsapp(p.teamWhatsapp, `Hi Shop Plug team! I need help buying ${p.productName} from ${p.vendorName}.`)}
           className="min-h-11 w-full text-sm font-medium text-gray-600 hover:text-ink"
         >
-          Talk to a person at Ndu
+          Talk to Shop Plug support
         </button>
       )}
     </div>

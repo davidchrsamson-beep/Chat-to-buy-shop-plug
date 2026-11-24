@@ -147,7 +147,7 @@ export default function SignupWizard({ categories, offer }: { categories: Signup
             </div>
             <Field label="Phone / WhatsApp" name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" placeholder="08012345678" hint="Buyers will reach you on this WhatsApp number." value={form.whatsapp} onChange={(e) => update("whatsapp", e.target.value)} error={errors.whatsapp} />
             <Field label="Email Address" name="email" type="email" autoComplete="email" placeholder="you@example.com" hint="You'll use this to log in." value={form.email} onChange={(e) => update("email", e.target.value)} error={errors.email} />
-            <Field label="Location (neighbourhood)" name="neighbourhood" placeholder="e.g. Marian, Watt, Calabar South" hint="Ndu currently operates in Calabar only." value={form.neighbourhood} onChange={(e) => update("neighbourhood", e.target.value)} error={errors.neighbourhood} />
+            <Field label="Location (neighbourhood)" name="neighbourhood" placeholder="e.g. Marian, Watt, Calabar South" hint="Shop Plug currently operates in Calabar only." value={form.neighbourhood} onChange={(e) => update("neighbourhood", e.target.value)} error={errors.neighbourhood} />
 
             <p className="pt-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400">Create login password</p>
             <PasswordField label="Password" name="password" autoComplete="new-password" placeholder="Min. 8 characters" value={form.password} onChange={(e) => update("password", e.target.value)} error={errors.password} />
@@ -245,8 +245,8 @@ export default function SignupWizard({ categories, offer }: { categories: Signup
           </p>
           <p className="text-sm text-gray-600">
             {offer.freeListingUntil
-              ? `You're also listed free in errand search and the Ndu market until ${offer.freeListingUntil}.`
-              : `To appear in errand search and the Ndu market: from ${formatNaira(offer.monthlyKobo)} a month.`}
+              ? `You're also listed free in Find a Plug search and the Shop Plug marketplace until ${offer.freeListingUntil}.`
+              : `To appear in Find a Plug search and the Shop Plug marketplace: from ${formatNaira(offer.monthlyKobo)} a month.`}
           </p>
 
           <div className="mt-6 rounded-2xl bg-brand-tint p-4 text-left text-sm">

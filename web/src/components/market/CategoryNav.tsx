@@ -19,7 +19,7 @@ export default async function CategoryNav({ active = "all" }: { active?: string 
         className="mb-6 flex items-center justify-between rounded-2xl border border-brand/20 bg-brand-tint px-4 py-3 transition hover:border-brand/40"
       >
         <span>
-          <span className="block font-serif text-lg font-bold">✦ Ndu Magazine</span>
+          <span className="block font-serif text-lg font-bold">✦ Shop Plug Magazine</span>
           <span className="block text-xs text-gray-600">Looks, fresh drops and vendor stories</span>
         </span>
         <span className="text-sm font-semibold text-brand">Read →</span>

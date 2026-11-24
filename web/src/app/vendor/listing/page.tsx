@@ -21,7 +21,7 @@ export default async function ListingPage() {
     <DashboardShell active="listing" storeName={vendor.business_name}>
       <h1 className="text-2xl font-bold">Listing</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Your storefront is free, always. Listing puts your products in errand search and on the Ndu market, where new buyers find you.
+        Your storefront is free, always. Listing puts your products in Find a Plug search and on the Shop Plug marketplace, where new buyers find you.
       </p>
 
       <div className={`mt-4 rounded-2xl border p-4 ${TONE[status.tone]}`}>

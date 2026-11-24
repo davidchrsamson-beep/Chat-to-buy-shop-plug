@@ -65,7 +65,7 @@ export default function StoreHero({
             className="ndu-rise mt-3 inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur"
             style={delay(1.7)}
           >
-            ✓ Verified by Ndu
+            ✓ Verified by Shop Plug
           </p>
         )}
         <div className="ndu-rise mt-7 flex justify-center" style={delay(1.85)}>

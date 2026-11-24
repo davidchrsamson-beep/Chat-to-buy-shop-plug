@@ -34,10 +34,10 @@ async function loadProduct(slug: string, productId: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, productId } = await params;
   const found = await loadProduct(slug, productId);
-  if (!found) return { title: "Product not found — Ndu" };
+  if (!found) return { title: "Product not found — Shop Plug" };
   return {
     title: `${found.product.name} — ${found.vendor.business_name}`,
-    description: `${formatPrice(found.product)} · ${found.vendor.business_name} on Ndu`,
+    description: `${formatPrice(found.product)} · ${found.vendor.business_name} on Shop Plug`,
   };
 }
 
