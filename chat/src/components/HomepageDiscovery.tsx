@@ -6,10 +6,10 @@ import type { HomepageDelivery, HomepageStore } from "@/lib/homepage";
 
 const mediaUrl = (url: string) => url.startsWith("/delivered/") ? "/find-a-plug" + url : url;
 const EIGHT_MILES_ASSETS = {
-  storefront: "/store-assets/eight-miles-exterior.jpg",
-  food: "/store-assets/eight-miles-food.jpg",
-  drinks: "/store-assets/eight-miles-drinks.jpg",
-  groceries: "/store-assets/eight-miles-groceries.jpg",
+  storefront: "/store_assets/eight-miles-exterior.jpg",
+  food: "/store_assets/eight-miles-food.jpg",
+  drinks: "/store_assets/eight-miles-drinks.jpg",
+  groceries: "/store_assets/eight-miles-groceries.jpg",
 };
 
 function StorefrontIcon() {
@@ -135,9 +135,9 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
       <section aria-labelledby="endorsed-title" className="px-1 py-3">
         <h2 id="endorsed-title" className="mb-4 text-center text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#82766E]">Endorsed by</h2>
         <div className="grid grid-cols-3 items-center gap-4 sm:gap-8">
-          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.jpg" alt="Finesse Hair — Affordable Luxury" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
+          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.png" alt="Finesse Hair — Affordable Luxury" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
           <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
-          <div className="flex h-16 items-center justify-center sm:h-24"><img src="/endorsements/gentleman-photography.jpg" alt="Gentleman Photography" loading="eager" className="h-full w-full max-h-full max-w-full object-contain"/></div>
+          <div className="flex h-16 items-center justify-center sm:h-24"><img src="/endorsements/gentleman-photography.png" alt="Gentleman Photography" loading="eager" className="h-full w-full max-h-full max-w-full object-contain"/></div>
         </div>
       </section>
 
