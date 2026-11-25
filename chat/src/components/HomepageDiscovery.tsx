@@ -90,10 +90,16 @@ export function HomepageDiscovery({
 
       <section aria-labelledby="endorsed-title" className="border-y border-line py-6">
         <h2 id="endorsed-title" className="mb-4 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-mute">Endorsed by</h2>
-        <div className="grid grid-cols-3 items-center gap-3">
-          <div className="text-center"><p className="font-serif text-sm font-bold text-[#1E3A8A]">Finesse Hair</p><p className="mt-1 text-[9px] tracking-wide text-mute">Affordable Luxury</p></div>
-          <div className="text-center"><p className="text-sm font-extrabold tracking-tight text-[#2563A6]">Josie Cement</p><p className="mt-1 text-[9px] text-mute">Building materials</p></div>
-          <div className="text-center"><p className="text-xs font-black tracking-[0.16em] text-ink">GENTLEMAN</p><p className="text-[8px] tracking-[0.22em] text-mute">PHOTOGRAPHY</p></div>
+        <div className="grid grid-cols-3 items-center gap-4 sm:gap-8">
+          <div className="flex h-24 items-center justify-center sm:h-28">
+            <img src="/endorsements/finesse-hair.jpg" alt="Finesse Hair — Affordable Luxury" loading="lazy" className="max-h-full max-w-full object-contain" />
+          </div>
+          <div className="flex h-24 items-center justify-center sm:h-28">
+            <img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="lazy" className="max-h-full max-w-full object-contain" />
+          </div>
+          <div className="flex h-24 items-center justify-center sm:h-28">
+            <img src="/endorsements/gentleman-photography.jpg" alt="Gentleman Photography" loading="lazy" className="max-h-full max-w-full object-contain" />
+          </div>
         </div>
       </section>
 
