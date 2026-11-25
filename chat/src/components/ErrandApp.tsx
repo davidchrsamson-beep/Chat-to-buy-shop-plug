@@ -321,7 +321,19 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
             <p className="mt-3 text-base leading-relaxed text-mute sm:text-lg">Get what you need delivered fast.</p>
           </div>
 
-          {composer(true)}
+          {<Composer
+            big
+            value={input}
+            onChange={setInput}
+            onSend={() => send()}
+            imagePreview={image}
+            onPickImage={pickImage}
+            onClearImage={clearImage}
+            notice={notice}
+            busy={isPending}
+            fileInputRef={fileInputRef}
+            placeholder="Search for a store or product…"
+          />}
           <HomepageDiscovery stores={homepage.stores} deliveries={homepage.deliveries} onAsk={(text) => send(text)} />
           <div className="pt-2">
             <p className="mb-3 text-sm font-semibold text-mute">Tap an example or snap a photo to start chatting</p>
@@ -329,7 +341,6 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
           </div>
         </main>
 
-        {EXPERIMENTS.quickChips && <QuickChips prefs={prefs} onChange={setPrefs} />}
         <p className="mt-4 text-center text-xs text-mute">Vendors verified by Shop Plug · You pay them directly</p>
       </div>
       </>
