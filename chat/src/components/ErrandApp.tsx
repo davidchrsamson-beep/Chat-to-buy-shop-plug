@@ -20,7 +20,7 @@ import ResultCard from "./ResultCard";
 import { THEME_STYLES } from "./Theme";
 import { IconPerson, IconPlus } from "./Icons";
 import { HomepageDiscovery } from "./HomepageDiscovery";
-import type { HomepageStore, HomepageDelivery } from "@web/lib/homepage";
+import type { HomepageStore, HomepageDelivery } from "@/lib/homepage";
 
 const TEAM_WHATSAPP = (process.env.NEXT_PUBLIC_TEAM_WHATSAPP ?? "").replace(/\D/g, "");
 const MARKET_URL = "";
