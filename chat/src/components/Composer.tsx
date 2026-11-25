@@ -51,7 +51,7 @@ export default function Composer({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          aria-label="Add a photo"
+          aria-label="Upload a photo"
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-mute hover:text-snow"
         >
           <IconImage />
@@ -65,7 +65,7 @@ export default function Composer({
           autoComplete="off"
           enterKeyHint="send"
           placeholder={placeholder ?? (big ? "Ask for anything…" : "Ask a follow-up…")}
-          className="min-w-0 flex-1 bg-transparent py-2.5 text-base text-snow placeholder:text-mute focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent py-2.5 text-[13px] text-snow placeholder:text-[11px] placeholder:text-mute focus:outline-none sm:text-sm sm:placeholder:text-xs"
         />
         <button
           type="submit"
