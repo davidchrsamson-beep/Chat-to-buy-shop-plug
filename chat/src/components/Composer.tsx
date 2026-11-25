@@ -19,7 +19,7 @@ type Props = {
 
 // The message box at the bottom: photo button, text, send.
 export default function Composer({
-  value, onChange, onSend, imagePreview, onPickImage, onClearImage, notice, busy, big, fileInputRef,
+  value, onChange, onSend, imagePreview, onPickImage, onClearImage, notice, busy, big, fileInputRef, placeholder,
 }: Props) {
   const canSend = !busy && (value.trim().length > 0 || imagePreview !== null);
 
