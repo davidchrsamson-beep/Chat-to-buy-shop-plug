@@ -272,7 +272,7 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
     window.open(`https://wa.me/${TEAM_WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
   }
 
-  const composer = (big: boolean) => (
+  const composer = (big: boolean, placeholder?: string) => (
     <Composer
       big={big}
       value={input}
@@ -284,6 +284,7 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
       notice={notice}
       busy={isPending}
       fileInputRef={fileInputRef}
+      placeholder={placeholder}
     />
   );
 
@@ -343,9 +344,35 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
             />
           </div>
           <HomepageDiscovery stores={homepage.stores} deliveries={homepage.deliveries} onAsk={(text) => send(text)} />
+
+          <section aria-label="Find a product by chat or photo" className="mt-1 space-y-3">
+            <div className="rounded-[22px] border border-[#F0E5DC] bg-white p-1.5 shadow-[0_8px_24px_rgba(82,48,24,0.08)]">
+              {composer(true, "Chat to find a product or upload a photo")}
+            </div>
+            <div className="rounded-[22px] border border-[#F0E5DC] bg-white px-4 py-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-[15px] font-extrabold tracking-tight text-[#20202A] sm:text-base">Discover how people are using Shop Plug</h2>
+                  <p className="mt-1 text-xs leading-relaxed text-[#71665F]">Real customer videos, WhatsApp messages and stories from the community.</p>
+                </div>
+                <span aria-hidden="true" className="text-xl text-[#E96512]">↗</span>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="flex min-h-28 flex-col items-center justify-center rounded-[16px] bg-[#FFF5ED] p-3 text-center">
+                  <span className="text-2xl">▶</span>
+                  <span className="mt-2 text-xs font-bold text-[#38313A]">Customer videos</span>
+                </div>
+                <div className="flex min-h-28 flex-col items-center justify-center rounded-[16px] bg-[#F7F4F1] p-3 text-center">
+                  <span className="text-2xl">💬</span>
+                  <span className="mt-2 text-xs font-bold text-[#38313A]">Customer messages</span>
+                </div>
+              </div>
+              <p className="mt-3 text-center text-[10px] text-[#8A817B]">Customer stories will appear here.</p>
+            </div>
+          </section>
         </main>
 
-        <p className="mt-4 text-center text-xs text-mute">Vendors verified by Shop Plug · You pay them directly</p>
+        <p className="mt-4 text-center text-xs text-mute">Vendors are vetted and verified by Shop Plug.</p>
       </div>
       </>
     );
