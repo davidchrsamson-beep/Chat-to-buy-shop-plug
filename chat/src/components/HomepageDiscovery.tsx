@@ -41,6 +41,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
   onAsk: (text: string) => void;
 }) {
   const storeTrack = useRef<HTMLDivElement>(null);
+  const hasLiveEightMiles = stores.some(isEightMilesStore);
   const featuredStores = [
     stores.find(isEightMilesStore) ?? EIGHT_MILES_PLACEHOLDER,
     ...stores.filter((store) => !isEightMilesStore(store)),
@@ -48,7 +49,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
 
   useEffect(() => {
     const el = storeTrack.current;
-    if (!el || featuredStores.length < 2) return;
+    if (!el || featuredStores.length < 2 || !hasLiveEightMiles) return;
     const timer = window.setInterval(() => {
       const card = el.querySelector<HTMLElement>("[data-store-card]");
       const step = card ? card.offsetWidth + 12 : el.clientWidth;
@@ -56,7 +57,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
       el.scrollTo({ left: atEnd ? 0 : el.scrollLeft + step, behavior: "smooth" });
     }, 6000);
     return () => window.clearInterval(timer);
-  }, [featuredStores.length]);
+  }, [featuredStores.length, hasLiveEightMiles]);
 
   return (
     <div className="mt-5 space-y-7 sm:mt-7 sm:space-y-9">
