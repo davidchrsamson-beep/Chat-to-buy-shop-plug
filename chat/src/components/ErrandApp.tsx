@@ -27,12 +27,22 @@ const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const CHRISTMAS = isChristmasEdition();
 
 const HERO_PHOTOS = [
-  { src: "/brand/hero-customer.jpg", alt: "A customer using Shop Plug on her phone" },
-  { src: "/brand/baileys.jpg", alt: "Baileys available to order" },
-  { src: "/brand/gift-box.jpg", alt: "A gift box available from a local store" },
-  { src: "/brand/greek-yogurt.jpg", alt: "Fresh Greek yoghurt" },
-  { src: "/brand/yogurt-starter.jpg", alt: "Yoghurt starter products" },
+  { src: "/brand/hero-customer.jpg", alt: "A customer using Shop Plug on her phone", caption: "Find products or vendors by chatting" },
+  { src: "/brand/baileys.jpg", alt: "Baileys available to order", caption: "Bailey's delivered" },
+  { src: "/brand/gift-box.jpg", alt: "A gift box available from a local store", caption: "Gift box for my babe, under 20k" },
+  { src: "/brand/greek-yogurt.jpg", alt: "Fresh Greek yoghurt", caption: "Order Greek Yoghurt" },
+  { src: "/brand/yogurt-starter.jpg", alt: "Yoghurt starter products", caption: "Yogurt culture available" },
 ];
+const HERO_PHOTO_PAGES = HERO_PHOTOS.reduce<(typeof HERO_PHOTOS[number])[][]>((pages, photo, index) => {
+  if (index % 2 === 0) pages.push([photo]);
+  else pages[pages.length - 1].push(photo);
+  return pages;
+}, []);
+if (HERO_PHOTO_PAGES.length && HERO_PHOTO_PAGES[HERO_PHOTO_PAGES.length - 1].length === 1) {
+  HERO_PHOTO_PAGES[HERO_PHOTO_PAGES.length - 1].push(HERO_PHOTOS[0]);
+}
+const HERO_PHOTO_LOOP = [...HERO_PHOTO_PAGES, HERO_PHOTO_PAGES[0]];
+const HERO_PAGE_COUNT = HERO_PHOTO_PAGES.length;
 
 // Phones: the page must never slide sideways (wide decorations are trimmed at the screen edge).
 const NO_SIDEWAYS = (
@@ -86,22 +96,62 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [prefs, setPrefsState] = useState<SearchPrefs>({});
   const [finds, setFinds] = useState<Find[]>([]);
-  const [heroPhotoIndex, setHeroPhotoIndex] = useState(0);
-  const heroStripRef = useRef<HTMLDivElement>(null);
+  const [heroPageIndex, setHeroPageIndex] = useState(0);
+  const [heroAnimate, setHeroAnimate] = useState(true);
+  const [mobileHeroPageIndex, setMobileHeroPageIndex] = useState(0);
+  const [mobileHeroAnimate, setMobileHeroAnimate] = useState(true);
   const heroTouchStart = useRef<number | null>(null);
+  const mobileHeroTouchStart = useRef<number | null>(null);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setHeroPhotoIndex((current) => (current + 1) % HERO_PHOTOS.length);
-    }, 2000);
+      setHeroPageIndex((current) => current < HERO_PAGE_COUNT ? current + 1 : 0);
+    }, 4000);
     return () => window.clearInterval(timer);
   }, []);
 
   useEffect(() => {
-    const strip = heroStripRef.current;
-    const slide = strip?.children[heroPhotoIndex] as HTMLElement | undefined;
-    if (strip && slide) strip.scrollTo({ left: slide.offsetLeft, behavior: "smooth" });
-  }, [heroPhotoIndex]);
+    const timer = window.setInterval(() => {
+      setMobileHeroPageIndex((current) => current < HERO_PAGE_COUNT ? current + 1 : 0);
+    }, 4000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  function finishHeroTransition() {
+    if (heroPageIndex === HERO_PAGE_COUNT) {
+      setHeroAnimate(false);
+      setHeroPageIndex(0);
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => setHeroAnimate(true));
+      });
+    }
+  }
+
+  function swipeHero(direction: 1 | -1) {
+    setHeroPageIndex((current) => {
+      const currentPage = current % HERO_PAGE_COUNT;
+      if (direction > 0 && currentPage === HERO_PAGE_COUNT - 1) return HERO_PAGE_COUNT;
+      return (currentPage + direction + HERO_PAGE_COUNT) % HERO_PAGE_COUNT;
+    });
+  }
+
+  function finishMobileHeroTransition() {
+    if (mobileHeroPageIndex === HERO_PAGE_COUNT) {
+      setMobileHeroAnimate(false);
+      setMobileHeroPageIndex(0);
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => setMobileHeroAnimate(true));
+      });
+    }
+  }
+
+  function swipeMobileHero(direction: 1 | -1) {
+    setMobileHeroPageIndex((current) => {
+      const currentPage = current % HERO_PAGE_COUNT;
+      if (direction > 0 && currentPage === HERO_PAGE_COUNT - 1) return HERO_PAGE_COUNT;
+      return (currentPage + direction + HERO_PAGE_COUNT) % HERO_PAGE_COUNT;
+    });
+  }
 
   // Remember the buyer's area on this phone (just a convenience; fine if it's not available).
   useEffect(() => {
@@ -339,52 +389,127 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
 
         <main className="flex min-w-0 flex-1 flex-col gap-5 pb-5 pt-5">
           <section aria-label="Shop Plug: order from nearby stores" className="grid min-w-0 grid-cols-1 items-center gap-4 bg-white py-2 sm:grid-cols-[0.82fr_1.18fr] sm:gap-6 sm:py-4">
-            <div className="relative z-10 py-1 sm:py-3">
-              <p className="mb-2 inline-flex rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.16em] text-[#C65A18] sm:text-[9px]">Your neighbourhood marketplace</p>
-              <h1 className="ndu-rise max-w-[250px] text-[23px] font-extrabold leading-[1.08] tracking-[-0.045em] text-[#20202A] sm:max-w-[310px] sm:text-[34px]">
+            <div className="relative z-10 py-1 text-center sm:py-3">
+              <p className="mx-auto mb-2 inline-flex rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#C65A18] sm:text-[10px]">Your neighbourhood marketplace</p>
+              <h1 className="ndu-rise mx-auto max-w-[300px] text-[27px] font-extrabold leading-[1.08] tracking-[-0.045em] text-[#20202A] sm:max-w-[360px] sm:text-[38px]">
                 Order from stores around you.
               </h1>
-              <p className="mt-2 max-w-[220px] text-[11px] font-medium leading-relaxed text-[#625B58] sm:mt-3 sm:text-sm">Get what you need delivered fast.</p>
+              <p className="mx-auto mt-2 max-w-[270px] text-[13px] font-medium leading-relaxed text-[#625B58] sm:mt-3 sm:text-base">Get what you need delivered fast.</p>
             </div>
             <div
-              className="relative min-w-0 overflow-hidden"
+              className="relative min-w-0 overflow-hidden touch-pan-y sm:hidden"
+              onTouchStart={(event) => { mobileHeroTouchStart.current = event.touches[0]?.clientX ?? null; }}
+              onTouchEnd={(event) => {
+                const startX = mobileHeroTouchStart.current;
+                const endX = event.changedTouches[0]?.clientX;
+                if (startX !== null && endX !== undefined && Math.abs(endX - startX) > 35) {
+                  swipeMobileHero(endX < startX ? 1 : -1);
+                }
+                mobileHeroTouchStart.current = null;
+              }}
+            >
+              <div className="overflow-hidden" aria-roledescription="carousel" aria-label="Examples of what you can order through Shop Plug">
+                <div
+                  className="flex"
+                  style={{
+                    width: `${HERO_PHOTO_LOOP.length * 100}%`,
+                    transform: `translateX(-${mobileHeroPageIndex * (100 / HERO_PHOTO_LOOP.length)}%)`,
+                    transition: mobileHeroAnimate ? "transform 600ms cubic-bezier(.22,.8,.25,1)" : "none",
+                  }}
+                  onTransitionEnd={finishMobileHeroTransition}
+                >
+                  {HERO_PHOTO_LOOP.map((page, pageIndex) => (
+                    <div
+                      key={pageIndex}
+                      className="grid w-1/4 shrink-0 grid-cols-2 gap-3"
+                      aria-hidden={pageIndex >= HERO_PAGE_COUNT ? true : undefined}
+                    >
+                      {page.map((photo, photoIndex) => (
+                        <div key={`${pageIndex}-${photoIndex}`} className="relative aspect-[16/10] min-w-0 overflow-hidden rounded-[22px] bg-[#F6F3EF] shadow-[0_8px_24px_rgba(32,32,42,0.10)]">
+                          <img src={photo.src} alt={photo.alt} className="h-full w-full object-contain" loading={pageIndex === 0 ? "eager" : "lazy"} />
+                          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+                          <span className="absolute inset-x-2 bottom-2 rounded-xl bg-black/70 px-2 py-1.5 text-[10px] font-bold leading-tight text-white shadow-sm backdrop-blur-sm">
+                            {photo.caption}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-2 flex items-center justify-center gap-1.5" aria-label={`Photo pair ${mobileHeroPageIndex % HERO_PAGE_COUNT + 1} of ${HERO_PAGE_COUNT}`}>
+                {HERO_PHOTO_PAGES.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    aria-label={`Show photo pair ${index + 1}`}
+                    aria-current={mobileHeroPageIndex % HERO_PAGE_COUNT === index ? "true" : undefined}
+                    onClick={() => {
+                      setMobileHeroAnimate(true);
+                      setMobileHeroPageIndex(index);
+                    }}
+                    className={`h-1.5 rounded-full transition-all ${mobileHeroPageIndex % HERO_PAGE_COUNT === index ? "w-5 bg-[#E96512]" : "w-1.5 bg-[#D9D4D0]"}`}
+                  />
+                ))}
+              </div>
+            </div>
+            <div
+              className="relative hidden min-w-0 overflow-hidden touch-pan-y sm:block"
               onTouchStart={(event) => { heroTouchStart.current = event.touches[0]?.clientX ?? null; }}
               onTouchEnd={(event) => {
                 const startX = heroTouchStart.current;
                 const endX = event.changedTouches[0]?.clientX;
                 if (startX !== null && endX !== undefined && Math.abs(endX - startX) > 35) {
-                  setHeroPhotoIndex((current) => (current + (endX < startX ? 1 : HERO_PHOTOS.length - 1)) % HERO_PHOTOS.length);
+                  swipeHero(endX < startX ? 1 : -1);
                 }
                 heroTouchStart.current = null;
               }}
             >
               <div
-                ref={heroStripRef}
-                className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                onScroll={(event) => {
-                  const strip = event.currentTarget;
-                  const slides = Array.from(strip.children) as HTMLElement[];
-                  const closest = slides.reduce((best, slide, index) =>
-                    Math.abs(slide.offsetLeft - strip.scrollLeft) < Math.abs(slides[best].offsetLeft - strip.scrollLeft) ? index : best, 0);
-                  if (closest !== heroPhotoIndex) setHeroPhotoIndex(closest);
-                }}
+                className="overflow-hidden"
+                aria-roledescription="carousel"
                 aria-label="Examples of what you can order through Shop Plug"
               >
-                {HERO_PHOTOS.map((photo, index) => (
-                  <div key={photo.src} className="relative aspect-[5/4] w-[82%] max-w-[360px] shrink-0 snap-start overflow-hidden rounded-[22px] bg-[#F6F3EF] shadow-[0_8px_24px_rgba(32,32,42,0.10)] sm:aspect-[4/3] sm:w-[78%]">
-                    <img src={photo.src} alt={photo.alt} className="h-full w-full object-cover" loading={index === 0 ? "eager" : "lazy"} />
-                  </div>
-                ))}
+                <div
+                  className="flex"
+                  style={{
+                    width: `${HERO_PHOTO_LOOP.length * 100}%`,
+                    transform: `translateX(-${heroPageIndex * (100 / HERO_PHOTO_LOOP.length)}%)`,
+                    transition: heroAnimate ? "transform 600ms cubic-bezier(.22,.8,.25,1)" : "none",
+                  }}
+                  onTransitionEnd={finishHeroTransition}
+                >
+                  {HERO_PHOTO_LOOP.map((page, pageIndex) => (
+                    <div
+                      key={pageIndex}
+                      className="grid w-1/4 shrink-0 grid-cols-2 gap-3"
+                      aria-hidden={pageIndex >= HERO_PAGE_COUNT ? true : undefined}
+                    >
+                      {page.map((photo, photoIndex) => (
+                        <div key={`${pageIndex}-${photoIndex}`} className="relative aspect-[16/10] min-w-0 overflow-hidden rounded-[22px] bg-[#F6F3EF] shadow-[0_8px_24px_rgba(32,32,42,0.10)]">
+                          <img src={photo.src} alt={photo.alt} className="h-full w-full object-contain" loading={pageIndex === 0 ? "eager" : "lazy"} />
+                          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+                          <span className="absolute inset-x-2 bottom-2 rounded-xl bg-black/70 px-2 py-1.5 text-[10px] font-bold leading-tight text-white shadow-sm backdrop-blur-sm sm:inset-x-3 sm:bottom-3 sm:px-3 sm:py-2 sm:text-xs">
+                            {photo.caption}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="mt-1 flex items-center justify-center gap-1.5" aria-label={`Photo ${heroPhotoIndex + 1} of ${HERO_PHOTOS.length}`}>
-                {HERO_PHOTOS.map((photo, index) => (
+              <div className="mt-2 flex items-center justify-center gap-1.5" aria-label={`Photo pair ${heroPageIndex % HERO_PAGE_COUNT + 1} of ${HERO_PAGE_COUNT}`}>
+                {HERO_PHOTO_PAGES.map((_, index) => (
                   <button
-                    key={photo.src}
+                    key={index}
                     type="button"
-                    aria-label={`Show photo ${index + 1}`}
-                    aria-current={heroPhotoIndex === index ? "true" : undefined}
-                    onClick={() => setHeroPhotoIndex(index)}
-                    className={`h-1.5 rounded-full transition-all ${heroPhotoIndex === index ? "w-5 bg-[#E96512]" : "w-1.5 bg-[#D9D4D0]"}`}
+                    aria-label={`Show photo pair ${index + 1}`}
+                    aria-current={heroPageIndex % HERO_PAGE_COUNT === index ? "true" : undefined}
+                    onClick={() => {
+                      setHeroAnimate(true);
+                      setHeroPageIndex(index);
+                    }}
+                    className={`h-1.5 rounded-full transition-all ${heroPageIndex % HERO_PAGE_COUNT === index ? "w-5 bg-[#E96512]" : "w-1.5 bg-[#D9D4D0]"}`}
                   />
                 ))}
               </div>

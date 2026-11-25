@@ -49,13 +49,13 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
 
   useEffect(() => {
     const el = storeTrack.current;
-    if (!el || featuredStores.length < 2 || !hasLiveEightMiles) return;
+    if (!el || featuredStores.length < 2) return;
     const timer = window.setInterval(() => {
       const card = el.querySelector<HTMLElement>("[data-store-card]");
       const step = card ? card.offsetWidth + 12 : el.clientWidth;
       const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 24;
       el.scrollTo({ left: atEnd ? 0 : el.scrollLeft + step, behavior: "smooth" });
-    }, 6000);
+    }, 12000);
     return () => window.clearInterval(timer);
   }, [featuredStores.length, hasLiveEightMiles]);
 
