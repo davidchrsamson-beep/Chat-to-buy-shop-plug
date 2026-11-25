@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import type { HomepageDelivery, HomepageStore } from "@web/lib/homepage";
+import type { HomepageDelivery, HomepageStore } from "@/lib/homepage";
 
 const mediaUrl = (url: string) => url.startsWith("/delivered/") ? `/find-a-plug${url}` : url;
 
