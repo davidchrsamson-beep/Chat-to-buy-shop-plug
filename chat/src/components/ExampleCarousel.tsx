@@ -6,12 +6,12 @@ import { IconImage } from "./Icons";
 // Real-photo examples of what errand is for. Exactly two show at a time, and the strip
 // moves along by one every few seconds (it pauses while touched; swipe to move it yourself).
 // Tapping a card asks errand for that thing.
-type Slide = { image?: string; ask: string; tag: string; photo?: boolean };
+type Slide = { image?: string; video?: string; ask: string; tag: string; photo?: boolean };
 
 const SLIDES: Slide[] = [
   { image: "/examples/baileys.jpg", ask: "Baileys delivered to Marian by 1am", tag: "🛵 Marian · by 1am" },
   { image: "/examples/yogurt-starter.jpg", ask: "Yogurt culture around Atekong", tag: "🛵 Atekong · today" },
-  { image: "/examples/greek-yogurt.jpg", ask: "Greek yogurt delivered to State Housing tonight", tag: "🛵 State Housing · tonight" },
+  { image: "/find-a-plug/delivered/suya-night.jpg", video: "/find-a-plug/delivered/suya-night.mp4", ask: "Suya delivered to State Housing tonight", tag: "🛵 State Housing · last night" },
   { image: "/examples/gift-box.jpg", ask: "Gift box for my babe under ₦20k", tag: "🎁 Under ₦20k" },
   { ask: "Find this from a photo", tag: "📷 Snap & search", photo: true },
 ];
@@ -91,7 +91,9 @@ export default function ExampleCarousel({ onAsk, onPhoto }: { onAsk: (text: stri
                 className="block w-full overflow-hidden rounded-[20px] border border-line bg-panel text-left transition hover:border-line-strong"
               >
                 <div className="relative aspect-[4/5] w-full bg-[#2A2B31]">
-                  {s.image ? (
+                  {s.video ? (
+                    <video src={s.video} poster={s.image} muted loop autoPlay playsInline className="h-full w-full object-cover" />
+                  ) : s.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.image} alt="" loading={i < 2 ? "eager" : "lazy"} draggable={false} className="h-full w-full object-cover" />
                   ) : (
