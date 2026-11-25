@@ -8,16 +8,18 @@ const mediaUrl = (url: string) => url.startsWith("/delivered/") ? "/find-a-plug"
 const EIGHT_MILES_ASSETS = {
   storefront: "/store_assets/eight-miles-exterior.jpg",
   food: "/store_assets/eight-miles-food.jpg",
-  drinks: "/store_assets/eight-miles-drinks.jpg",
-  groceries: "/store_assets/eight-miles-groceries.jpg",
+  provisions: "/store_assets/eight-miles-groceries.jpg",
+  softDrinks: "/store_assets/eight-miles-drinks.jpg",
 };
+
+const isEightMilesStore = (store: HomepageStore) => /(?:eight|8)[\s-]*miles?/i.test(store.business_name);
 
 // Temporary featured example while Eight Miles is not yet onboarded as a live vendor.
 const EIGHT_MILES_PLACEHOLDER: HomepageStore = {
   id: "featured-eight-miles-placeholder",
   business_name: "Eight Miles Supermarket & Food Plaza",
   slug: "eight-miles-supermarket-food-plaza",
-  neighbourhood: "Eight Miles",
+  neighbourhood: "Marian",
   logo_url: null,
   hero_urls: [],
   verified: false,
@@ -39,7 +41,10 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
   onAsk: (text: string) => void;
 }) {
   const storeTrack = useRef<HTMLDivElement>(null);
-  const featuredStores = [EIGHT_MILES_PLACEHOLDER, ...stores.filter((store) => !/eight miles/i.test(store.business_name))];
+  const featuredStores = [
+    stores.find(isEightMilesStore) ?? EIGHT_MILES_PLACEHOLDER,
+    ...stores.filter((store) => !isEightMilesStore(store)),
+  ];
 
   useEffect(() => {
     const el = storeTrack.current;
@@ -64,32 +69,24 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
           <Link href="/marketplace" className="shrink-0 text-xs font-bold text-[#E96512]">See all <span aria-hidden="true">→</span></Link>
         </div>
         <div ref={storeTrack} className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none]">
-            {(stores.some((item) => /eight miles/i.test(item.business_name))
-              ? stores
-              : [{
-                  id: "eight-miles-placeholder",
-                  business_name: "Eight Miles Supermarket & Food Plaza",
-                  slug: "eight-miles-placeholder",
-                  neighbourhood: "Eight Miles",
-                  logo_url: null,
-                  hero_urls: [],
-                  verified: false,
-                }, ...stores]
-            ).map((store) => {
+            {featuredStores.map((store) => {
               const photos = (store.hero_urls || []).filter(Boolean);
-              const isPlaceholder = store.id === "eight-miles-placeholder";
-              const storefront = isPlaceholder ? EIGHT_MILES_ASSETS.storefront : (photos[0] || store.logo_url);
-              const gallery = isPlaceholder
-                ? [EIGHT_MILES_ASSETS.food, EIGHT_MILES_ASSETS.drinks, EIGHT_MILES_ASSETS.groceries]
+              const isEightMiles = isEightMilesStore(store);
+              const storefront = isEightMiles ? EIGHT_MILES_ASSETS.storefront : (photos[0] || store.logo_url);
+              const gallery = isEightMiles
+                ? [EIGHT_MILES_ASSETS.food, EIGHT_MILES_ASSETS.provisions, EIGHT_MILES_ASSETS.softDrinks]
                 : [photos[1], photos[2], photos[3]].filter(Boolean).slice(0, 3);
-              const description = isPlaceholder
-                ? "Groceries · Drinks · Provisions"
+              const description = isEightMiles
+                ? "Food · Provisions · Soft drinks"
                 : "Explore this store’s products and categories";
+              const browsePrompt = isEightMiles
+                ? "Show me food, provisions and soft drinks from Eight Miles Supermarket"
+                : "Show me more products from " + store.business_name;
               return (
                 <article key={store.id} data-store-card className="w-full min-w-full shrink-0 snap-start overflow-hidden rounded-[22px] border border-[#F0DCCB] bg-[#FFFCF9] p-3 shadow-[0_8px_24px_rgba(103,61,31,0.09)] sm:p-4">
                   <div className="grid grid-cols-[40%_1fr] gap-3 sm:grid-cols-[38%_1fr] sm:gap-4">
                     <div className="relative min-h-[166px] overflow-hidden rounded-[16px] bg-[#F8E8DA] sm:min-h-[190px]">
-                      {storefront ? <img src={storefront} alt={store.business_name + " storefront"} loading="lazy" className="absolute inset-0 h-full w-full object-cover"/> :
+                      {storefront ? <img src={storefront} alt={store.business_name + " storefront"} loading={isEightMiles ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover"/> :
                         <div className="flex h-full min-h-[166px] items-center justify-center text-5xl font-black text-[#E9A878]">{store.business_name.slice(0,1).toUpperCase()}</div>}
                     </div>
                     <div className="flex min-w-0 flex-col justify-between py-0.5">
@@ -104,9 +101,9 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
                               <img src={src} alt={store.business_name + " featured item " + (index + 1)} loading="lazy" className="h-full w-full object-cover"/>
                             </div>
                           ))}
-                          <button type="button" onClick={() => onAsk("Show me more products from " + store.business_name + ", including groceries, drinks and provisions")} className="flex aspect-square min-w-0 flex-col items-center justify-center rounded-[10px] bg-[#FFF0E4] text-center text-[#D95E10] transition hover:bg-[#FCE1CF]">
-                            <span className="text-[9px] font-extrabold sm:text-[10px]">See more</span>
-                            <span className="mt-0.5 text-xs" aria-hidden="true">→</span>
+                          <button type="button" onClick={() => onAsk(browsePrompt)} className="flex aspect-square w-full min-w-0 flex-col items-center justify-center gap-0 rounded-[10px] bg-[#FFF0E4] p-1 text-center text-[#D95E10] transition hover:bg-[#FCE1CF]">
+                            <span className="text-[8px] font-extrabold leading-tight sm:text-[9px]">See more</span>
+                            <span className="text-[10px] leading-none" aria-hidden="true">→</span>
                           </button>
                         </div>
                         <p className="mt-2 flex items-center gap-1 text-[10px] font-semibold text-[#766A62] sm:text-xs"><span className="text-[#E96512]"><PinIcon /></span>{store.neighbourhood || "Your neighbourhood"}</p>
@@ -114,7 +111,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
                       </div>
                     </div>
                   </div>
-                  <button type="button" onClick={() => onAsk("I want to chat with " + store.business_name)} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#20202A] px-4 py-2.5 text-[11px] font-bold text-white transition hover:bg-[#353541] sm:w-auto sm:min-w-[150px]">
+                  <button type="button" onClick={() => onAsk("I want to chat with " + store.business_name)} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-black px-4 py-2.5 text-[11px] font-bold text-white transition hover:bg-[#111111] sm:w-auto sm:min-w-[150px]">
                     Chat with vendor <span className="ml-2" aria-hidden="true">↗</span>
                   </button>
                 </article>
@@ -158,7 +155,10 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
         <div className="grid grid-cols-3 items-center gap-3 sm:gap-8">
           <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.png" alt="Finesse Hair — Affordable Luxury" loading="eager" className="max-h-12 w-full max-w-[94%] object-contain sm:max-h-14"/></div>
           <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="eager" className="max-h-12 w-full max-w-[94%] scale-[1.8] object-contain sm:max-h-14 sm:scale-[2]"/></div>
-          <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/gentleman-photography.png" alt="Gentleman Photography" loading="eager" className="max-h-12 w-full max-w-[94%] object-contain sm:max-h-14"/></div>
+          <div className="flex h-16 flex-col items-center justify-center gap-0.5 sm:h-20">
+            <img src="/endorsements/gentleman-photography.png" alt="Gentleman Photography logo" loading="eager" className="h-10 w-full max-w-[94%] object-contain sm:h-12"/>
+            <span className="text-center text-[8px] font-semibold leading-tight text-[#6D5141] sm:text-[10px]">Gentleman Photography</span>
+          </div>
         </div>
       </section>
 
