@@ -137,7 +137,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
         <div className="grid grid-cols-3 items-center gap-4 sm:gap-8">
           <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.jpg" alt="Finesse Hair — Affordable Luxury" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
           <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
-          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/gentleman-photography.jpg" alt="Gentleman Photography" loading="eager" className="h-full max-h-full max-w-full object-contain"/></div>
+          <div className="flex h-16 items-center justify-center sm:h-24"><img src="/endorsements/gentleman-photography.jpg" alt="Gentleman Photography" loading="eager" className="h-full w-full max-h-full max-w-full object-contain"/></div>
         </div>
       </section>
 
