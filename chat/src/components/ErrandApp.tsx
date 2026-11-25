@@ -314,7 +314,7 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
         </header>
 
         <main className="flex min-w-0 flex-1 flex-col gap-5 pb-5 pt-5">
-          <section className="relative isolate grid min-h-[204px] grid-cols-[1.12fr_.88fr] items-center overflow-hidden rounded-[26px] bg-[#FFF0E4] pl-5 pr-2 py-5 sm:min-h-[250px] sm:grid-cols-[1.08fr_.92fr] sm:pl-7 sm:pr-4 sm:py-7">
+          <section className="relative isolate grid min-h-[226px] grid-cols-[1fr_1fr] items-center overflow-hidden rounded-[26px] bg-[#FFF0E4] pl-5 pr-1 py-5 sm:min-h-[270px] sm:pl-7 sm:pr-3 sm:py-7">
             <div className="relative z-10 py-2">
               <p className="mb-2 inline-flex rounded-full bg-white/75 px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.16em] text-[#C65A18] sm:text-[9px]">Your neighbourhood marketplace</p>
               <h1 className="ndu-rise max-w-[270px] text-[27px] font-extrabold leading-[1.04] tracking-[-0.045em] text-[#20202A] sm:max-w-[390px] sm:text-[42px]">
@@ -322,9 +322,9 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
               </h1>
               <p className="mt-2 max-w-[220px] text-[11px] font-medium leading-relaxed text-[#625B58] sm:mt-3 sm:text-sm">Get what you need delivered fast.</p>
             </div>
-            <div className="relative -mr-2 flex h-full min-h-[166px] items-end justify-end self-stretch sm:-mr-4 sm:min-h-[210px]">
-              <img src="/brand/hero-customer.jpg" alt="Shop Plug customer browsing local stores" className="absolute inset-0 h-full w-full object-cover object-[center_22%]" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#FFF0E4] via-[#FFF0E4]/25 to-transparent" />
+            <div className="relative -mr-1 flex h-full min-h-[190px] items-center justify-center self-stretch overflow-hidden sm:-mr-3 sm:min-h-[230px]">
+              <img src="/brand/hero-customer.jpg" alt="Shop Plug customer browsing local stores" className="absolute inset-0 h-full w-full object-cover object-[center_32%]" />
+              <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[#FFF0E4]/20 to-transparent" />
             </div>
           </section>
 
