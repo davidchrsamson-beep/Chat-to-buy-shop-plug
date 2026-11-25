@@ -5,6 +5,12 @@ import Link from "next/link";
 import type { HomepageDelivery, HomepageStore } from "@/lib/homepage";
 
 const mediaUrl = (url: string) => url.startsWith("/delivered/") ? "/find-a-plug" + url : url;
+const EIGHT_MILES_ASSETS = {
+  storefront: "/store-assets/eight-miles-exterior.jpg",
+  food: "/store-assets/eight-miles-food.jpg",
+  drinks: "/store-assets/eight-miles-drinks.jpg",
+  groceries: "/store-assets/eight-miles-groceries.jpg",
+};
 
 function StorefrontIcon() {
   return <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 10h18l-1.5-6h-15L3 10Z"/><path d="M5 10v10h14V10M9 20v-6h6v6M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></svg>;
@@ -16,11 +22,7 @@ function PinIcon() {
   return <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>;
 }
 
-export function HomepageDiscovery({
-  stores,
-  deliveries,
-  onAsk,
-}: {
+export function HomepageDiscovery({ stores, deliveries, onAsk }: {
   stores: HomepageStore[];
   deliveries: HomepageDelivery[];
   onAsk: (text: string) => void;
@@ -53,55 +55,52 @@ export function HomepageDiscovery({
           <div ref={storeTrack} className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none]">
             {stores.map((store) => {
               const photos = (store.hero_urls || []).filter(Boolean);
-              const storefront = photos[0] || store.logo_url;
-              const inside = photos[1];
-              const productOne = photos[2];
-              const productTwo = photos[3];
-              const gallery = [inside, productOne, productTwo].filter(Boolean);
+              const isEightMiles = /eight miles/i.test(store.business_name);
+              const storefront = isEightMiles ? EIGHT_MILES_ASSETS.storefront : (photos[0] || store.logo_url);
+              const gallery = isEightMiles
+                ? [EIGHT_MILES_ASSETS.food, EIGHT_MILES_ASSETS.drinks, EIGHT_MILES_ASSETS.groceries]
+                : [photos[1], photos[2], photos[3]].filter(Boolean).slice(0, 3);
+              const description = isEightMiles
+                ? "Groceries · Beverages · Household items"
+                : (store.neighbourhood ? "Everyday essentials from a store near you" : "Shop local products and essentials");
               return (
-                <button key={store.id} data-store-card type="button"
-                  onClick={() => onAsk("Show me products from " + store.business_name)}
-                  className="group w-full min-w-full shrink-0 snap-start overflow-hidden rounded-[22px] border border-[#F0DCCB] bg-[#FFFCF9] text-left shadow-[0_8px_24px_rgba(103,61,31,0.09)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(103,61,31,0.14)] active:scale-[.995]">
-                  <div className="grid grid-cols-[42%_1fr] gap-3 p-3 sm:grid-cols-[40%_1fr] sm:gap-4 sm:p-4">
-                    <div className="relative min-h-[142px] overflow-hidden rounded-[16px] bg-[#F8E8DA] sm:min-h-[190px]">
-                      {storefront ? <img src={storefront} alt={store.business_name + " storefront"} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]" /> :
-                        <div className="flex h-full min-h-[142px] items-center justify-center text-5xl font-black text-[#E9A878]">{store.business_name.slice(0,1).toUpperCase()}</div>}
-                      <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-1 text-[9px] font-semibold text-white">Storefront</span>
+                <article key={store.id} data-store-card className="w-full min-w-full shrink-0 snap-start overflow-hidden rounded-[22px] border border-[#F0DCCB] bg-[#FFFCF9] p-3 shadow-[0_8px_24px_rgba(103,61,31,0.09)] sm:p-4">
+                  <div className="grid grid-cols-[40%_1fr] gap-3 sm:grid-cols-[38%_1fr] sm:gap-4">
+                    <div className="relative min-h-[166px] overflow-hidden rounded-[16px] bg-[#F8E8DA] sm:min-h-[190px]">
+                      {storefront ? <img src={storefront} alt={store.business_name + " storefront"} loading="lazy" className="absolute inset-0 h-full w-full object-cover"/> :
+                        <div className="flex h-full min-h-[166px] items-center justify-center text-5xl font-black text-[#E9A878]">{store.business_name.slice(0,1).toUpperCase()}</div>}
                     </div>
-                    <div className="flex min-w-0 flex-col justify-between py-1">
+                    <div className="flex min-w-0 flex-col justify-between py-0.5">
                       <div>
                         <div className="flex items-start gap-1.5">
                           <p className="min-w-0 text-[15px] font-extrabold leading-tight text-[#24212A] sm:text-lg">{store.business_name}</p>
                           {store.verified && <span title="Verified store" aria-label="Verified store" className="mt-0.5 flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full bg-[#E8F5EC] text-[11px] font-black text-[#21864A]">✓</span>}
                         </div>
-                        <p className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-[#766A62] sm:text-xs"><span className="text-[#E96512]"><PinIcon /></span>{store.neighbourhood || "Local neighbourhood"}</p>
-                        <p className="mt-3 text-[10px] leading-relaxed text-[#71665F] sm:text-xs">Shop with a familiar business in your community.</p>
-                      </div>
-                      <span className="mt-3 inline-flex w-fit items-center rounded-full bg-[#FFF0E4] px-3 py-2 text-[10px] font-extrabold text-[#D95E10] transition group-hover:bg-[#F36C13] group-hover:text-white">Explore this store <span className="ml-1">→</span></span>
-                    </div>
-                  </div>
-                  <div className="px-3 pb-3 sm:px-4 sm:pb-4">
-                    <div className="grid grid-cols-4 gap-2">
-                      {gallery.slice(0,3).map((src, index) => (
-                        <div key={src} className="relative aspect-square overflow-hidden rounded-[12px] bg-[#F7E9DF]">
-                          <img src={src} alt={index === 0 ? store.business_name + " store interior" : store.business_name + " featured product"} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                          {index === 0 && <span className="absolute bottom-1 left-1 rounded bg-black/55 px-1.5 py-0.5 text-[8px] font-semibold text-white">Inside</span>}
+                        <div className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-2">
+                          {gallery.map((src, index) => (
+                            <div key={src} className="relative aspect-square min-w-0 overflow-hidden rounded-[10px] bg-[#F7E9DF]">
+                              <img src={src} alt={store.business_name + " featured item " + (index + 1)} loading="lazy" className="h-full w-full object-cover"/>
+                            </div>
+                          ))}
+                          <button type="button" onClick={() => onAsk("Show me more items from " + store.business_name)} className="flex aspect-square min-w-0 flex-col items-center justify-center rounded-[10px] bg-[#FFF0E4] text-center text-[#D95E10] transition hover:bg-[#FCE1CF]">
+                            <span className="text-[10px] font-extrabold sm:text-xs">See more</span>
+                            <span className="mt-0.5 text-sm" aria-hidden="true">→</span>
+                          </button>
                         </div>
-                      ))}
-                      <div className="flex aspect-square flex-col items-center justify-center rounded-[12px] border border-dashed border-[#E9B995] bg-[#FFF2E8] text-center text-[#D95E10]">
-                        <span className="text-[11px] font-black">Explore</span>
-                        <span className="mt-0.5 text-[9px] font-semibold">more items</span>
-                        <span className="mt-0.5 text-sm">↗</span>
+                        <p className="mt-2 flex items-center gap-1 text-[10px] font-semibold text-[#766A62] sm:text-xs"><span className="text-[#E96512]"><PinIcon /></span>{store.neighbourhood || "Your neighbourhood"}</p>
+                        <p className="mt-1 text-[10px] leading-relaxed text-[#71665F] sm:text-xs">{description}</p>
                       </div>
                     </div>
-                    <p className="mt-2 text-[10px] font-medium text-[#8B7E75]">Tap to explore products and chat with this store</p>
                   </div>
-                </button>
+                  <button type="button" onClick={() => onAsk("I want to chat with " + store.business_name)} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#20202A] px-4 py-2.5 text-[11px] font-bold text-white transition hover:bg-[#E96512] sm:w-auto sm:min-w-[150px]">
+                    Chat with vendor <span className="ml-2" aria-hidden="true">↗</span>
+                  </button>
+                </article>
               );
             })}
           </div>
         ) : <p className="rounded-2xl border border-dashed border-[#EAD9CB] bg-white/70 p-4 text-sm text-[#77747A]">Local stores will appear here as they join Shop Plug.</p>}
-          <p className="mt-1 text-[10px] text-[#8A817B]">Swipe to explore stores in your community</p>
+        <p className="mt-1 text-[10px] text-[#8A817B]">Swipe to explore stores in your community</p>
       </section>
 
       <section aria-labelledby="recent-orders-title">
@@ -136,9 +135,9 @@ export function HomepageDiscovery({
       <section aria-labelledby="endorsed-title" className="px-1 py-3">
         <h2 id="endorsed-title" className="mb-4 text-center text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#82766E]">Endorsed by</h2>
         <div className="grid grid-cols-3 items-center gap-4 sm:gap-8">
-          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.jpg" alt="Finesse Hair — Affordable Luxury" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply" /></div>
-          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply" /></div>
-          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/gentleman-photography.jpg" alt="Gentleman Photography" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply" /></div>
+          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.jpg" alt="Finesse Hair — Affordable Luxury" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
+          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
+          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/gentleman-photography.jpg" alt="Gentleman Photography" loading="eager" className="h-full max-h-full max-w-full object-contain"/></div>
         </div>
       </section>
 
