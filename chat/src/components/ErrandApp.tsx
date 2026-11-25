@@ -332,7 +332,7 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
                   maskImage: "linear-gradient(to right, transparent 0%, black 23%, black 100%)",
                 }}
               />
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-[48%] bg-gradient-to-r from-[#FFF0E4] via-[#FFF0E4]/65 to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-[36%] bg-gradient-to-r from-[#FFF0E4] via-[#FFF0E4]/45 to-transparent" />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[22%] bg-gradient-to-t from-[#FFF0E4]/55 to-transparent" />
             </div>
           </section>
