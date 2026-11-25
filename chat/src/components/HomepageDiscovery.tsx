@@ -51,18 +51,29 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
           </h2>
           <Link href="/marketplace" className="shrink-0 text-xs font-bold text-[#E96512]">See all <span aria-hidden="true">→</span></Link>
         </div>
-        {stores.length ? (
+        {true ? (
           <div ref={storeTrack} className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none]">
-            {stores.map((store) => {
+            {(stores.some((item) => /eight miles/i.test(item.business_name))
+              ? stores
+              : [{
+                  id: "eight-miles-placeholder",
+                  business_name: "Eight Miles Supermarket & Food Plaza",
+                  slug: "eight-miles-placeholder",
+                  neighbourhood: "Eight Miles",
+                  logo_url: null,
+                  hero_urls: [],
+                  verified: false,
+                }, ...stores]
+            ).map((store) => {
               const photos = (store.hero_urls || []).filter(Boolean);
-              const isEightMiles = /eight miles/i.test(store.business_name);
-              const storefront = isEightMiles ? EIGHT_MILES_ASSETS.storefront : (photos[0] || store.logo_url);
-              const gallery = isEightMiles
+              const isPlaceholder = store.id === "eight-miles-placeholder";
+              const storefront = isPlaceholder ? EIGHT_MILES_ASSETS.storefront : (photos[0] || store.logo_url);
+              const gallery = isPlaceholder
                 ? [EIGHT_MILES_ASSETS.food, EIGHT_MILES_ASSETS.drinks, EIGHT_MILES_ASSETS.groceries]
                 : [photos[1], photos[2], photos[3]].filter(Boolean).slice(0, 3);
-              const description = isEightMiles
-                ? "Food · Soft drinks · Provisions"
-                : ("Explore this store’s products and categories");
+              const description = isPlaceholder
+                ? "Groceries · Drinks · Provisions"
+                : "Explore this store’s products and categories";
               return (
                 <article key={store.id} data-store-card className="w-full min-w-full shrink-0 snap-start overflow-hidden rounded-[22px] border border-[#F0DCCB] bg-[#FFFCF9] p-3 shadow-[0_8px_24px_rgba(103,61,31,0.09)] sm:p-4">
                   <div className="grid grid-cols-[40%_1fr] gap-3 sm:grid-cols-[38%_1fr] sm:gap-4">
@@ -82,7 +93,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
                               <img src={src} alt={store.business_name + " featured item " + (index + 1)} loading="lazy" className="h-full w-full object-cover"/>
                             </div>
                           ))}
-                          <button type="button" onClick={() => onAsk("Show me more products from " + store.business_name + ", including food, soft drinks and provisions")} className="flex aspect-square min-w-0 flex-col items-center justify-center rounded-[10px] bg-[#FFF0E4] text-center text-[#D95E10] transition hover:bg-[#FCE1CF]">
+                          <button type="button" onClick={() => onAsk("Show me more products from " + store.business_name + ", including groceries, drinks and provisions")} className="flex aspect-square min-w-0 flex-col items-center justify-center rounded-[10px] bg-[#FFF0E4] text-center text-[#D95E10] transition hover:bg-[#FCE1CF]">
                             <span className="text-[9px] font-extrabold sm:text-[10px]">See more</span>
                             <span className="mt-0.5 text-xs" aria-hidden="true">→</span>
                           </button>
@@ -92,7 +103,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
                       </div>
                     </div>
                   </div>
-                  <button type="button" onClick={() => onAsk("I want to chat with " + store.business_name)} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#E96512] px-4 py-2.5 text-[11px] font-bold text-white transition hover:bg-[#C9500B] sm:w-auto sm:min-w-[150px]">
+                  <button type="button" onClick={() => onAsk("I want to chat with " + store.business_name)} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#20202A] px-4 py-2.5 text-[11px] font-bold text-white transition hover:bg-[#353541] sm:w-auto sm:min-w-[150px]">
                     Chat with vendor <span className="ml-2" aria-hidden="true">↗</span>
                   </button>
                 </article>
@@ -134,10 +145,10 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
 
       <section aria-labelledby="endorsed-title" className="px-1 py-3">
         <h2 id="endorsed-title" className="mb-4 text-center text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#82766E]">Endorsed by</h2>
-        <div className="grid grid-cols-3 items-center gap-4 sm:gap-8">
-          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.png" alt="Finesse Hair — Affordable Luxury" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
-          <div className="flex h-14 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="lazy" className="max-h-full max-w-full object-contain mix-blend-multiply"/></div>
-          <div className="flex h-16 items-center justify-center sm:h-24"><img src="/endorsements/gentleman-photography.png" alt="Gentleman Photography" loading="eager" className="h-full w-full max-h-full max-w-full object-contain"/></div>
+        <div className="grid grid-cols-3 items-center gap-3 sm:gap-8">
+          <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.png" alt="Finesse Hair — Affordable Luxury" loading="eager" className="max-h-12 w-full max-w-[94%] object-contain sm:max-h-14"/></div>
+          <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="eager" className="max-h-12 w-full max-w-[94%] object-contain sm:max-h-14"/></div>
+          <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/gentleman-photography.png" alt="Gentleman Photography" loading="eager" className="max-h-12 w-full max-w-[94%] object-contain sm:max-h-14"/></div>
         </div>
       </section>
 
