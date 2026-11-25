@@ -61,8 +61,8 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
                 ? [EIGHT_MILES_ASSETS.food, EIGHT_MILES_ASSETS.drinks, EIGHT_MILES_ASSETS.groceries]
                 : [photos[1], photos[2], photos[3]].filter(Boolean).slice(0, 3);
               const description = isEightMiles
-                ? "Groceries · Beverages · Household items"
-                : (store.neighbourhood ? "Everyday essentials from a store near you" : "Shop local products and essentials");
+                ? "Food · Soft drinks · Provisions"
+                : ("Explore this store’s products and categories");
               return (
                 <article key={store.id} data-store-card className="w-full min-w-full shrink-0 snap-start overflow-hidden rounded-[22px] border border-[#F0DCCB] bg-[#FFFCF9] p-3 shadow-[0_8px_24px_rgba(103,61,31,0.09)] sm:p-4">
                   <div className="grid grid-cols-[40%_1fr] gap-3 sm:grid-cols-[38%_1fr] sm:gap-4">
@@ -82,9 +82,9 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
                               <img src={src} alt={store.business_name + " featured item " + (index + 1)} loading="lazy" className="h-full w-full object-cover"/>
                             </div>
                           ))}
-                          <button type="button" onClick={() => onAsk("Show me more items from " + store.business_name)} className="flex aspect-square min-w-0 flex-col items-center justify-center rounded-[10px] bg-[#FFF0E4] text-center text-[#D95E10] transition hover:bg-[#FCE1CF]">
-                            <span className="text-[10px] font-extrabold sm:text-xs">See more</span>
-                            <span className="mt-0.5 text-sm" aria-hidden="true">→</span>
+                          <button type="button" onClick={() => onAsk("Show me more products from " + store.business_name + ", including food, soft drinks and provisions")} className="flex aspect-square min-w-0 flex-col items-center justify-center rounded-[10px] bg-[#FFF0E4] text-center text-[#D95E10] transition hover:bg-[#FCE1CF]">
+                            <span className="text-[9px] font-extrabold sm:text-[10px]">See more</span>
+                            <span className="mt-0.5 text-xs" aria-hidden="true">→</span>
                           </button>
                         </div>
                         <p className="mt-2 flex items-center gap-1 text-[10px] font-semibold text-[#766A62] sm:text-xs"><span className="text-[#E96512]"><PinIcon /></span>{store.neighbourhood || "Your neighbourhood"}</p>
@@ -92,7 +92,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
                       </div>
                     </div>
                   </div>
-                  <button type="button" onClick={() => onAsk("I want to chat with " + store.business_name)} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#20202A] px-4 py-2.5 text-[11px] font-bold text-white transition hover:bg-[#E96512] sm:w-auto sm:min-w-[150px]">
+                  <button type="button" onClick={() => onAsk("I want to chat with " + store.business_name)} className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#E96512] px-4 py-2.5 text-[11px] font-bold text-white transition hover:bg-[#C9500B] sm:w-auto sm:min-w-[150px]">
                     Chat with vendor <span className="ml-2" aria-hidden="true">↗</span>
                   </button>
                 </article>
@@ -141,10 +141,8 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
         </div>
       </section>
 
-      <div className="flex items-center gap-3 rounded-[20px] bg-[#FFF0E4] px-4 py-4 text-[#28232A]">
-        <span aria-hidden="true" className="text-2xl text-[#F36C13]">⌖</span>
-        <p className="flex-1 text-sm font-extrabold leading-snug">Support local businesses in your community.</p>
-        <Link href="/marketplace" className="shrink-0 rounded-full bg-[#20202A] px-3 py-2.5 text-[10px] font-bold text-white">Start shopping →</Link>
+      <div className="rounded-[20px] bg-[#FFF0E4] px-5 py-5 text-center text-[#28232A]">
+        <p className="text-base font-extrabold leading-snug sm:text-lg">Support local businesses in your community.</p>
       </div>
     </div>
   );
