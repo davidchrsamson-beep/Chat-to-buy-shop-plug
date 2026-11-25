@@ -295,7 +295,7 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
       <style>{THEME_STYLES}</style>
       {NO_SIDEWAYS}
       {CHRISTMAS && <FestiveBackdrop />}
-      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-5xl flex-col px-4 pb-8 pt-6 sm:px-6">
+      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-5xl flex-col bg-[linear-gradient(180deg,#FFF7F0_0%,#FFFFFF_30%,#FFF9F4_100%)] px-4 pb-8 pt-5 sm:px-6">
         {CHRISTMAS && (
           <div className="mb-1 flex justify-center">
             <ChristmasBadge />
@@ -303,7 +303,7 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
         )}
         <header className="flex h-11 items-center justify-between gap-2">
           <Link href="/" aria-label={`${BRAND} home`} className="flex shrink-0 items-center gap-2">
-            <span className="text-lg font-extrabold tracking-tight">{BRAND}</span>
+            <img src="/brand/shop-plug-logo.png" alt="Shop Plug" className="h-10 w-auto object-contain" />
           </Link>
           <nav aria-label="Main navigation" className="flex shrink-0 items-center gap-2">
             <a href="/find-a-plug" className="whitespace-nowrap text-xs font-semibold text-snow hover:text-accent">Find a Plug</a>
@@ -313,32 +313,37 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
           </nav>
         </header>
 
-        <main className="flex min-w-0 flex-1 flex-col gap-7 pb-5 pt-8">
-          <div className="px-1">
-            <h1 className="max-w-2xl text-[36px] font-bold leading-[1.06] tracking-tight sm:text-5xl">
-              Order from stores around you.
-            </h1>
-            <p className="mt-3 text-base leading-relaxed text-mute sm:text-lg">Get what you need delivered fast.</p>
-          </div>
+        <main className="flex min-w-0 flex-1 flex-col gap-5 pb-5 pt-5">
+          <section className="relative isolate min-h-[208px] overflow-hidden rounded-[26px] bg-[#FFF0E4] px-5 py-6 sm:min-h-[260px] sm:px-7 sm:py-8">
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-[53%] sm:w-[48%]">
+              <img src="/brand/hero-customer.jpg" alt="" className="h-full w-full object-cover object-[center_28%]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#FFF0E4] via-[#FFF0E4]/75 to-transparent" />
+            </div>
+            <div className="relative z-10 max-w-[66%] sm:max-w-[62%]">
+              <p className="mb-3 inline-flex rounded-full bg-white/80 px-3 py-1 text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#C65A18]">Your neighbourhood marketplace</p>
+              <h1 className="ndu-rise text-[30px] font-extrabold leading-[1.04] tracking-[-0.045em] text-[#20202A] sm:text-[42px]">
+                Order from stores around you.
+              </h1>
+              <p className="mt-3 max-w-[230px] text-[12px] font-medium leading-relaxed text-[#625B58] sm:text-sm">Get what you need delivered fast.</p>
+            </div>
+          </section>
 
-          {<Composer
-            big
-            value={input}
-            onChange={setInput}
-            onSend={() => send()}
-            imagePreview={image}
-            onPickImage={pickImage}
-            onClearImage={clearImage}
-            notice={notice}
-            busy={isPending}
-            fileInputRef={fileInputRef}
-            placeholder="Search for a store or product…"
-          />}
-          <HomepageDiscovery stores={homepage.stores} deliveries={homepage.deliveries} onAsk={(text) => send(text)} />
-          <div className="pt-2">
-            <p className="mb-3 text-sm font-semibold text-mute">Tap an example or snap a photo to start chatting</p>
-            <ExampleCarousel onAsk={(text) => send(text)} onPhoto={() => fileInputRef.current?.click()} />
+          <div className="rounded-[22px] border border-[#F0E5DC] bg-white p-1.5 shadow-[0_8px_24px_rgba(82,48,24,0.08)]">
+            <Composer
+              big
+              value={input}
+              onChange={setInput}
+              onSend={() => send()}
+              imagePreview={image}
+              onPickImage={pickImage}
+              onClearImage={clearImage}
+              notice={notice}
+              busy={isPending}
+              fileInputRef={fileInputRef}
+              placeholder="Search for a store or product…"
+            />
           </div>
+          <HomepageDiscovery stores={homepage.stores} deliveries={homepage.deliveries} onAsk={(text) => send(text)} />
         </main>
 
         <p className="mt-4 text-center text-xs text-mute">Vendors verified by Shop Plug · You pay them directly</p>
