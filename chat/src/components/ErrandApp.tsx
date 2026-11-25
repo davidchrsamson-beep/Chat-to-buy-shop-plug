@@ -421,14 +421,14 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
                   {HERO_PHOTO_LOOP.map((page, pageIndex) => (
                     <div
                       key={pageIndex}
-                      className="grid w-1/4 shrink-0 grid-cols-[repeat(2,minmax(0,42%))] justify-center gap-3"
+                      className="grid w-1/4 shrink-0 grid-cols-[repeat(2,minmax(0,46%))] justify-center gap-3"
                       aria-hidden={pageIndex >= HERO_PAGE_COUNT ? true : undefined}
                     >
                       {page.map((photo, photoIndex) => (
                         <div key={`${pageIndex}-${photoIndex}`} className="relative aspect-[4/5] min-w-0 overflow-hidden rounded-[22px] bg-[#F6F3EF] shadow-[0_8px_24px_rgba(32,32,42,0.10)]">
                           <img src={photo.src} alt={photo.alt} className="h-full w-full object-cover" loading={pageIndex === 0 ? "eager" : "lazy"} />
-                          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-                          <span className="absolute inset-x-2 bottom-2 flex min-h-[46px] line-clamp-2 items-center justify-center rounded-xl bg-black/75 px-2 py-2 text-center text-[11px] font-bold leading-tight text-white shadow-sm backdrop-blur-sm">
+                          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                          <span className="absolute inset-x-2 bottom-2 flex min-h-[32px] line-clamp-2 items-center justify-center rounded-lg bg-black/55 px-2 py-1 text-center text-[9px] font-semibold leading-tight text-white shadow-sm backdrop-blur-sm">
                             {photo.caption}
                           </span>
                         </div>
@@ -482,14 +482,14 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
                   {HERO_PHOTO_LOOP.map((page, pageIndex) => (
                     <div
                       key={pageIndex}
-                      className="grid w-1/4 shrink-0 grid-cols-[repeat(2,minmax(0,42%))] justify-center gap-3"
+                      className="grid w-1/4 shrink-0 grid-cols-[repeat(2,minmax(0,46%))] justify-center gap-3"
                       aria-hidden={pageIndex >= HERO_PAGE_COUNT ? true : undefined}
                     >
                       {page.map((photo, photoIndex) => (
                         <div key={`${pageIndex}-${photoIndex}`} className="relative aspect-[4/5] min-w-0 overflow-hidden rounded-[22px] bg-[#F6F3EF] shadow-[0_8px_24px_rgba(32,32,42,0.10)]">
                           <img src={photo.src} alt={photo.alt} className="h-full w-full object-cover" loading={pageIndex === 0 ? "eager" : "lazy"} />
-                          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-                          <span className="absolute inset-x-2 bottom-2 flex min-h-[46px] line-clamp-2 items-center justify-center rounded-xl bg-black/75 px-2 py-2 text-center text-[11px] font-bold leading-tight text-white shadow-sm backdrop-blur-sm sm:inset-x-3 sm:bottom-3 sm:min-h-[52px] sm:px-3 sm:text-xs">
+                          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                          <span className="absolute inset-x-2 bottom-2 flex min-h-[32px] line-clamp-2 items-center justify-center rounded-lg bg-black/55 px-2 py-1 text-center text-[9px] font-semibold leading-tight text-white shadow-sm backdrop-blur-sm sm:inset-x-3 sm:bottom-3 sm:min-h-[38px] sm:px-3 sm:text-[10px]">
                             {photo.caption}
                           </span>
                         </div>
