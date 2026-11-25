@@ -18,7 +18,7 @@ function Svg(props: SVGProps<SVGSVGElement>) {
 }
 
 export const IconImage = () => (
-  <Svg><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="9" cy="9" r="2" /><path d="m21 15-5-5L5 21" /></Svg>
+  <Svg width={21} height={21} strokeWidth={1.8}><path d="M4.5 7.5h3l1.5-2h6l1.5 2h3A1.5 1.5 0 0 1 21 9v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18V9a1.5 1.5 0 0 1 1.5-1.5Z"/><circle cx="12" cy="13" r="3.2"/><path d="M18 3v4M16 5h4"/></Svg>
 );
 export const IconSend = () => (
   <Svg width={20} height={20} strokeWidth={2.4}><path d="M12 19V5" /><path d="m5 12 7-7 7 7" /></Svg>
