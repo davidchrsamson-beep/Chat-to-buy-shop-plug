@@ -20,6 +20,8 @@ import ResultCard from "./ResultCard";
 import ShopPlugMark from "./ShopPlugMark";
 import { THEME_STYLES } from "./Theme";
 import { IconPerson, IconPlus } from "./Icons";
+import { HomepageDiscovery } from "./HomepageDiscovery";
+import type { HomepageStore, HomepageDelivery } from "@web/lib/homepage";
 
 const TEAM_WHATSAPP = (process.env.NEXT_PUBLIC_TEAM_WHATSAPP ?? "").replace(/\D/g, "");
 const MARKET_URL = "";
@@ -71,7 +73,7 @@ function sortResults(list: VendorResult[], sort: SortKey) {
   return copy;
 }
 
-export default function ErrandApp() {
+export default function ErrandApp({ homepage }: { homepage: { stores: HomepageStore[]; deliveries: HomepageDelivery[] } }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [image, setImage] = useState<string | null>(null);
@@ -294,7 +296,7 @@ export default function ErrandApp() {
       <style>{THEME_STYLES}</style>
       {NO_SIDEWAYS}
       {CHRISTMAS && <FestiveBackdrop />}
-      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-xl flex-col px-4 pb-6 pt-7">
+      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-5xl flex-col px-4 pb-8 pt-6 sm:px-6">
         {CHRISTMAS && (
           <div className="mb-1 flex justify-center">
             <ChristmasBadge />
@@ -302,8 +304,7 @@ export default function ErrandApp() {
         )}
         <header className="flex h-11 items-center justify-between gap-2">
           <Link href="/" aria-label={`${BRAND} home`} className="flex shrink-0 items-center gap-2">
-            <ShopPlugMark size={30} />
-            <span className="text-lg font-bold tracking-tight">{BRAND}</span>
+            <span className="text-lg font-extrabold tracking-tight">{BRAND}</span>
           </Link>
           <nav aria-label="Main navigation" className="flex shrink-0 items-center gap-2">
             <a href="/find-a-plug" className="whitespace-nowrap text-xs font-semibold text-snow hover:text-accent">Find a Plug</a>
@@ -313,22 +314,24 @@ export default function ErrandApp() {
           </nav>
         </header>
 
-        <main className="flex min-w-0 flex-1 flex-col justify-end gap-6 pb-5">
+        <main className="flex min-w-0 flex-1 flex-col gap-7 pb-5 pt-8">
           <div className="px-1">
-            <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight">
-              Order anything you want, day or late night.
+            <h1 className="max-w-2xl text-[36px] font-bold leading-[1.06] tracking-tight sm:text-5xl">
+              Order from stores around you.
             </h1>
-            <p className="mt-3 text-base leading-relaxed text-mute">Vendors are always active.</p>
+            <p className="mt-3 text-base leading-relaxed text-mute sm:text-lg">Get what you need delivered fast.</p>
           </div>
 
-          {EXPERIMENTS.justFound && <JustFound finds={finds} onPick={(name) => send(name)} />}
-
-          <ExampleCarousel onAsk={(text) => send(text)} onPhoto={() => fileInputRef.current?.click()} />
+          {composer(true)}
+          <HomepageDiscovery stores={homepage.stores} deliveries={homepage.deliveries} onAsk={(text) => send(text)} />
+          <div className="pt-2">
+            <p className="mb-3 text-sm font-semibold text-mute">Tap an example or snap a photo to start chatting</p>
+            <ExampleCarousel onAsk={(text) => send(text)} onPhoto={() => fileInputRef.current?.click()} />
+          </div>
         </main>
 
         {EXPERIMENTS.quickChips && <QuickChips prefs={prefs} onChange={setPrefs} />}
-        {composer(true)}
-        <p className="mt-3 text-center text-xs text-mute">Vendors verified by Shop Plug · You pay them directly</p>
+        <p className="mt-4 text-center text-xs text-mute">Vendors verified by Shop Plug · You pay them directly</p>
       </div>
       </>
     );
