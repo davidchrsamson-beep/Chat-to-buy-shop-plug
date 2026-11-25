@@ -17,7 +17,6 @@ import Searching from "./Searching";
 import { isChristmasEdition } from "@chat/lib/season";
 import ExampleCarousel from "./ExampleCarousel";
 import ResultCard from "./ResultCard";
-import ShopPlugMark from "./ShopPlugMark";
 import { THEME_STYLES } from "./Theme";
 import { IconPerson, IconPlus } from "./Icons";
 import { HomepageDiscovery } from "./HomepageDiscovery";
