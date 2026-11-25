@@ -15,7 +15,6 @@ import JustFound from "./JustFound";
 import QuickChips from "./QuickChips";
 import Searching from "./Searching";
 import { isChristmasEdition } from "@chat/lib/season";
-import ExampleCarousel from "./ExampleCarousel";
 import ResultCard from "./ResultCard";
 import { THEME_STYLES } from "./Theme";
 import { IconPerson, IconPlus } from "./Icons";
