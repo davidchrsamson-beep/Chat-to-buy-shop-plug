@@ -26,6 +26,14 @@ const MARKET_URL = "";
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const CHRISTMAS = isChristmasEdition();
 
+const HERO_PHOTOS = [
+  { src: "/brand/hero-customer.jpg", alt: "A customer using Shop Plug on her phone" },
+  { src: "/brand/baileys.jpg", alt: "Baileys available to order" },
+  { src: "/brand/gift-box.jpg", alt: "A gift box available from a local store" },
+  { src: "/brand/greek-yogurt.jpg", alt: "Fresh Greek yoghurt" },
+  { src: "/brand/yogurt-starter.jpg", alt: "Yoghurt starter products" },
+];
+
 // Phones: the page must never slide sideways (wide decorations are trimmed at the screen edge).
 const NO_SIDEWAYS = (
   <style>{`html, body { max-width: 100%; overflow-x: hidden; overflow-x: clip; overscroll-behavior-x: none; }`}</style>
@@ -78,6 +86,22 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [prefs, setPrefsState] = useState<SearchPrefs>({});
   const [finds, setFinds] = useState<Find[]>([]);
+  const [heroPhotoIndex, setHeroPhotoIndex] = useState(0);
+  const heroStripRef = useRef<HTMLDivElement>(null);
+  const heroTouchStart = useRef<number | null>(null);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setHeroPhotoIndex((current) => (current + 1) % HERO_PHOTOS.length);
+    }, 2000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const strip = heroStripRef.current;
+    const slide = strip?.children[heroPhotoIndex] as HTMLElement | undefined;
+    if (strip && slide) strip.scrollTo({ left: slide.offsetLeft, behavior: "smooth" });
+  }, [heroPhotoIndex]);
 
   // Remember the buyer's area on this phone (just a convenience; fine if it's not available).
   useEffect(() => {
@@ -295,7 +319,7 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
       <style>{THEME_STYLES}</style>
       {NO_SIDEWAYS}
       {CHRISTMAS && <FestiveBackdrop />}
-      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-5xl flex-col bg-[linear-gradient(180deg,#FFF7F0_0%,#FFFFFF_30%,#FFF9F4_100%)] px-4 pb-8 pt-5 sm:px-6">
+      <div className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-5xl flex-col bg-white px-4 pb-8 pt-5 sm:px-6">
         {CHRISTMAS && (
           <div className="mb-1 flex justify-center">
             <ChristmasBadge />
@@ -314,26 +338,56 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
         </header>
 
         <main className="flex min-w-0 flex-1 flex-col gap-5 pb-5 pt-5">
-          <section className="relative isolate grid min-h-[226px] grid-cols-[1fr_1fr] items-center overflow-hidden rounded-[26px] bg-[#FFF0E4] pl-5 pr-1 py-5 sm:min-h-[270px] sm:pl-7 sm:pr-3 sm:py-7">
-            <div className="relative z-10 py-2">
-              <p className="mb-2 inline-flex rounded-full bg-white/75 px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.16em] text-[#C65A18] sm:text-[9px]">Your neighbourhood marketplace</p>
-              <h1 className="ndu-rise max-w-[270px] text-[27px] font-extrabold leading-[1.04] tracking-[-0.045em] text-[#20202A] sm:max-w-[390px] sm:text-[42px]">
+          <section aria-label="Shop Plug: order from nearby stores" className="grid min-w-0 grid-cols-1 items-center gap-4 bg-white py-2 sm:grid-cols-[0.82fr_1.18fr] sm:gap-6 sm:py-4">
+            <div className="relative z-10 py-1 sm:py-3">
+              <p className="mb-2 inline-flex rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.16em] text-[#C65A18] sm:text-[9px]">Your neighbourhood marketplace</p>
+              <h1 className="ndu-rise max-w-[250px] text-[23px] font-extrabold leading-[1.08] tracking-[-0.045em] text-[#20202A] sm:max-w-[310px] sm:text-[34px]">
                 Order from stores around you.
               </h1>
               <p className="mt-2 max-w-[220px] text-[11px] font-medium leading-relaxed text-[#625B58] sm:mt-3 sm:text-sm">Get what you need delivered fast.</p>
             </div>
-            <div className="relative -mr-1 flex h-full min-h-[190px] items-center justify-center self-stretch overflow-hidden sm:-mr-3 sm:min-h-[230px]">
-              <img
-                src="/brand/hero-customer.jpg"
-                alt="Shop Plug customer browsing local stores"
-                className="absolute inset-0 h-full w-[116%] max-w-none -translate-x-[5%] scale-[1.06] object-cover object-[center_30%] mix-blend-multiply"
-                style={{
-                  WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 23%, black 100%)",
-                  maskImage: "linear-gradient(to right, transparent 0%, black 23%, black 100%)",
+            <div
+              className="relative min-w-0 overflow-hidden"
+              onTouchStart={(event) => { heroTouchStart.current = event.touches[0]?.clientX ?? null; }}
+              onTouchEnd={(event) => {
+                const startX = heroTouchStart.current;
+                const endX = event.changedTouches[0]?.clientX;
+                if (startX !== null && endX !== undefined && Math.abs(endX - startX) > 35) {
+                  setHeroPhotoIndex((current) => (current + (endX < startX ? 1 : HERO_PHOTOS.length - 1)) % HERO_PHOTOS.length);
+                }
+                heroTouchStart.current = null;
+              }}
+            >
+              <div
+                ref={heroStripRef}
+                className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                onScroll={(event) => {
+                  const strip = event.currentTarget;
+                  const slides = Array.from(strip.children) as HTMLElement[];
+                  const closest = slides.reduce((best, slide, index) =>
+                    Math.abs(slide.offsetLeft - strip.scrollLeft) < Math.abs(slides[best].offsetLeft - strip.scrollLeft) ? index : best, 0);
+                  if (closest !== heroPhotoIndex) setHeroPhotoIndex(closest);
                 }}
-              />
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-[36%] bg-gradient-to-r from-[#FFF0E4] via-[#FFF0E4]/45 to-transparent" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[22%] bg-gradient-to-t from-[#FFF0E4]/55 to-transparent" />
+                aria-label="Examples of what you can order through Shop Plug"
+              >
+                {HERO_PHOTOS.map((photo, index) => (
+                  <div key={photo.src} className="relative aspect-[5/4] w-[82%] max-w-[360px] shrink-0 snap-start overflow-hidden rounded-[22px] bg-[#F6F3EF] shadow-[0_8px_24px_rgba(32,32,42,0.10)] sm:aspect-[4/3] sm:w-[78%]">
+                    <img src={photo.src} alt={photo.alt} className="h-full w-full object-cover" loading={index === 0 ? "eager" : "lazy"} />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-1 flex items-center justify-center gap-1.5" aria-label={`Photo ${heroPhotoIndex + 1} of ${HERO_PHOTOS.length}`}>
+                {HERO_PHOTOS.map((photo, index) => (
+                  <button
+                    key={photo.src}
+                    type="button"
+                    aria-label={`Show photo ${index + 1}`}
+                    aria-current={heroPhotoIndex === index ? "true" : undefined}
+                    onClick={() => setHeroPhotoIndex(index)}
+                    className={`h-1.5 rounded-full transition-all ${heroPhotoIndex === index ? "w-5 bg-[#E96512]" : "w-1.5 bg-[#D9D4D0]"}`}
+                  />
+                ))}
+              </div>
             </div>
           </section>
 
