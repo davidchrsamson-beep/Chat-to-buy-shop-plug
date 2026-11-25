@@ -300,30 +300,30 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
             <ChristmasBadge />
           </div>
         )}
-        <header className="flex h-11 items-center justify-between gap-2">
-          <Link href="/" aria-label={`${BRAND} home`} className="flex shrink-0 items-center gap-2">
-            <img src="/brand/shop-plug-logo.png" alt="Shop Plug" className="h-10 w-auto object-contain" />
+        <header className="flex min-h-10 items-center justify-between gap-2 sm:gap-4">
+          <Link href="/" aria-label={`${BRAND} home`} className="flex min-w-0 shrink items-center">
+            <img src="/brand/shop-plug-logo.png" alt="Shop Plug" className="h-7 max-w-[104px] w-auto object-contain mix-blend-multiply sm:h-8 sm:max-w-[126px]" />
           </Link>
-          <nav aria-label="Main navigation" className="flex shrink-0 items-center gap-2">
-            <a href="/find-a-plug" className="whitespace-nowrap text-xs font-semibold text-snow hover:text-accent">Find a Plug</a>
-            <Link href="/vendor/signup" className="whitespace-nowrap rounded-full bg-accent px-2.5 py-2 text-xs font-semibold text-night">
+          <nav aria-label="Main navigation" className="ml-auto flex shrink-0 items-center gap-3 sm:gap-5">
+            <a href="/find-a-plug" className="whitespace-nowrap text-[11px] font-semibold text-[#6D5141] transition hover:text-[#E96512] sm:text-xs">Find a Plug</a>
+            <Link href="/vendor/signup" className="whitespace-nowrap text-[11px] font-bold text-[#E96512] transition hover:text-[#B94A0B] sm:text-xs">
               Sell on Shop Plug
             </Link>
           </nav>
         </header>
 
         <main className="flex min-w-0 flex-1 flex-col gap-5 pb-5 pt-5">
-          <section className="relative isolate min-h-[208px] overflow-hidden rounded-[26px] bg-[#FFF0E4] px-5 py-6 sm:min-h-[260px] sm:px-7 sm:py-8">
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-[53%] sm:w-[48%]">
-              <img src="/brand/hero-customer.jpg" alt="" className="h-full w-full object-cover object-[center_28%]" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#FFF0E4] via-[#FFF0E4]/75 to-transparent" />
-            </div>
-            <div className="relative z-10 max-w-[66%] sm:max-w-[62%]">
-              <p className="mb-3 inline-flex rounded-full bg-white/80 px-3 py-1 text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#C65A18]">Your neighbourhood marketplace</p>
-              <h1 className="ndu-rise text-[30px] font-extrabold leading-[1.04] tracking-[-0.045em] text-[#20202A] sm:text-[42px]">
+          <section className="relative isolate grid min-h-[204px] grid-cols-[1.12fr_.88fr] items-center overflow-hidden rounded-[26px] bg-[#FFF0E4] pl-5 pr-2 py-5 sm:min-h-[250px] sm:grid-cols-[1.08fr_.92fr] sm:pl-7 sm:pr-4 sm:py-7">
+            <div className="relative z-10 py-2">
+              <p className="mb-2 inline-flex rounded-full bg-white/75 px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.16em] text-[#C65A18] sm:text-[9px]">Your neighbourhood marketplace</p>
+              <h1 className="ndu-rise max-w-[270px] text-[27px] font-extrabold leading-[1.04] tracking-[-0.045em] text-[#20202A] sm:max-w-[390px] sm:text-[42px]">
                 Order from stores around you.
               </h1>
-              <p className="mt-3 max-w-[230px] text-[12px] font-medium leading-relaxed text-[#625B58] sm:text-sm">Get what you need delivered fast.</p>
+              <p className="mt-2 max-w-[220px] text-[11px] font-medium leading-relaxed text-[#625B58] sm:mt-3 sm:text-sm">Get what you need delivered fast.</p>
+            </div>
+            <div className="relative -mr-2 flex h-full min-h-[166px] items-end justify-end self-stretch sm:-mr-4 sm:min-h-[210px]">
+              <img src="/brand/hero-customer.jpg" alt="Shop Plug customer browsing local stores" className="absolute inset-0 h-full w-full object-cover object-[center_22%]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#FFF0E4] via-[#FFF0E4]/25 to-transparent" />
             </div>
           </section>
 
@@ -339,7 +339,7 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
               notice={notice}
               busy={isPending}
               fileInputRef={fileInputRef}
-              placeholder="Search for a store or product…"
+              placeholder="Chat to buy what you want"
             />
           </div>
           <HomepageDiscovery stores={homepage.stores} deliveries={homepage.deliveries} onAsk={(text) => send(text)} />
