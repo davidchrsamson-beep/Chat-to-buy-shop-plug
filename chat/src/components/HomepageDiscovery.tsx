@@ -63,8 +63,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
           </h2>
           <Link href="/marketplace" className="shrink-0 text-xs font-bold text-[#E96512]">See all <span aria-hidden="true">→</span></Link>
         </div>
-        {true ? (
-          <div ref={storeTrack} className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none]">
+        <div ref={storeTrack} className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none]">
             {(stores.some((item) => /eight miles/i.test(item.business_name))
               ? stores
               : [{
@@ -121,8 +120,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
                 </article>
               );
             })}
-          </div>
-        ) : <p className="rounded-2xl border border-dashed border-[#EAD9CB] bg-white/70 p-4 text-sm text-[#77747A]">Local stores will appear here as they join Shop Plug.</p>}
+        </div>
         <p className="mt-1 text-[10px] text-[#8A817B]">Swipe to explore stores in your community</p>
       </section>
 
