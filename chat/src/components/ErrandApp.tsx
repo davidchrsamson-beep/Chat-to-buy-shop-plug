@@ -323,8 +323,17 @@ export default function ErrandApp({ homepage }: { homepage: { stores: HomepageSt
               <p className="mt-2 max-w-[220px] text-[11px] font-medium leading-relaxed text-[#625B58] sm:mt-3 sm:text-sm">Get what you need delivered fast.</p>
             </div>
             <div className="relative -mr-1 flex h-full min-h-[190px] items-center justify-center self-stretch overflow-hidden sm:-mr-3 sm:min-h-[230px]">
-              <img src="/brand/hero-customer.jpg" alt="Shop Plug customer browsing local stores" className="absolute inset-0 h-full w-full object-cover object-[center_32%]" />
-              <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[#FFF0E4]/20 to-transparent" />
+              <img
+                src="/brand/hero-customer.jpg"
+                alt="Shop Plug customer browsing local stores"
+                className="absolute inset-0 h-full w-[116%] max-w-none -translate-x-[5%] scale-[1.06] object-cover object-[center_30%] mix-blend-multiply"
+                style={{
+                  WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 23%, black 100%)",
+                  maskImage: "linear-gradient(to right, transparent 0%, black 23%, black 100%)",
+                }}
+              />
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-[48%] bg-gradient-to-r from-[#FFF0E4] via-[#FFF0E4]/65 to-transparent" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[22%] bg-gradient-to-t from-[#FFF0E4]/55 to-transparent" />
             </div>
           </section>
 
