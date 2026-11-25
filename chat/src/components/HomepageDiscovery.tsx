@@ -12,6 +12,17 @@ const EIGHT_MILES_ASSETS = {
   groceries: "/store_assets/eight-miles-groceries.jpg",
 };
 
+// Temporary featured example while Eight Miles is not yet onboarded as a live vendor.
+const EIGHT_MILES_PLACEHOLDER: HomepageStore = {
+  id: "featured-eight-miles-placeholder",
+  business_name: "Eight Miles Supermarket & Food Plaza",
+  slug: "eight-miles-supermarket-food-plaza",
+  neighbourhood: "Eight Miles",
+  logo_url: null,
+  hero_urls: [],
+  verified: false,
+};
+
 function StorefrontIcon() {
   return <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 10h18l-1.5-6h-15L3 10Z"/><path d="M5 10v10h14V10M9 20v-6h6v6M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></svg>;
 }
@@ -28,10 +39,11 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
   onAsk: (text: string) => void;
 }) {
   const storeTrack = useRef<HTMLDivElement>(null);
+  const featuredStores = [EIGHT_MILES_PLACEHOLDER, ...stores.filter((store) => !/eight miles/i.test(store.business_name))];
 
   useEffect(() => {
     const el = storeTrack.current;
-    if (!el || stores.length < 2) return;
+    if (!el || featuredStores.length < 2) return;
     const timer = window.setInterval(() => {
       const card = el.querySelector<HTMLElement>("[data-store-card]");
       const step = card ? card.offsetWidth + 12 : el.clientWidth;
@@ -39,7 +51,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
       el.scrollTo({ left: atEnd ? 0 : el.scrollLeft + step, behavior: "smooth" });
     }, 6000);
     return () => window.clearInterval(timer);
-  }, [stores.length]);
+  }, [featuredStores.length]);
 
   return (
     <div className="mt-5 space-y-7 sm:mt-7 sm:space-y-9">
