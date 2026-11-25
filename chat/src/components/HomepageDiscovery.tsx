@@ -157,7 +157,7 @@ export function HomepageDiscovery({ stores, deliveries, onAsk }: {
         <h2 id="endorsed-title" className="mb-4 text-center text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#82766E]">Endorsed by</h2>
         <div className="grid grid-cols-3 items-center gap-3 sm:gap-8">
           <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/finesse-hair.png" alt="Finesse Hair — Affordable Luxury" loading="eager" className="max-h-12 w-full max-w-[94%] object-contain sm:max-h-14"/></div>
-          <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="eager" className="max-h-12 w-full max-w-[94%] object-contain sm:max-h-14"/></div>
+          <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/josie-cement.jpg" alt="Josie Cement" loading="eager" className="max-h-12 w-full max-w-[94%] scale-[1.8] object-contain sm:max-h-14 sm:scale-[2]"/></div>
           <div className="flex h-16 min-w-0 items-center justify-center sm:h-20"><img src="/endorsements/gentleman-photography.png" alt="Gentleman Photography" loading="eager" className="max-h-12 w-full max-w-[94%] object-contain sm:max-h-14"/></div>
         </div>
       </section>
