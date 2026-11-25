@@ -14,6 +14,7 @@ type Props = {
   busy: boolean;
   big?: boolean;
   fileInputRef: RefObject<HTMLInputElement | null>;
+  placeholder?: string;
 };
 
 // The message box at the bottom: photo button, text, send.
@@ -63,7 +64,7 @@ export default function Composer({
           maxLength={300}
           autoComplete="off"
           enterKeyHint="send"
-          placeholder={big ? "Ask for anything…" : "Ask a follow-up…"}
+          placeholder={placeholder ?? (big ? "Ask for anything…" : "Ask a follow-up…")}
           className="min-w-0 flex-1 bg-transparent py-2.5 text-base text-snow placeholder:text-mute focus:outline-none"
         />
         <button
